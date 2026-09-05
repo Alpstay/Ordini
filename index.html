@@ -77,6 +77,7 @@
   .pill{font-size:10px; font-weight:600; letter-spacing:.06em; text-transform:uppercase; padding:5px 10px; border-radius:999px; white-space:nowrap;}
   .pill-aperto{border:1px solid var(--verde); color:var(--verde); background:var(--carta);}
   .pill-conf{background:var(--verde); color:#fff; border:1px solid var(--verde);}
+  .pill-parz{background:var(--verde-tenue); color:var(--verde); border:1px dashed var(--verde);}
 
   /* --- ricerca e filtri --- */
   .cerca{position:relative; margin-bottom:8px;}
@@ -207,6 +208,12 @@
 
   .fascia-cta{position:fixed; bottom:70px; left:0; right:0; padding:0 16px; z-index:15;}
   .fascia-cta > div{max-width:42rem; margin:0 auto;}
+  .barra-azioni{display:flex; gap:8px; background:var(--carta); padding:8px; border:1px solid var(--linea); border-radius:16px; box-shadow:0 -6px 18px rgba(0,0,0,.08);}
+  .ba-btn{flex:1; padding:13px 8px; border:1px solid var(--linea-input); background:var(--carta); border-radius:12px; font-weight:600; font-size:13px; display:flex; align-items:center; justify-content:center; gap:6px; color:var(--inchiostro);}
+  .ba-primaria{flex:1.6; padding:13px 8px; background:var(--verde); color:#fff; border-radius:12px; font-weight:700; font-size:14px; display:flex; align-items:center; justify-content:center; gap:6px; box-shadow:0 4px 12px rgba(31,66,52,.25);}
+  .ba-primaria:hover{background:var(--verde-scuro);}
+  .ba-elimina{width:50px; flex:none; border:1.5px dashed var(--rosso); color:var(--rosso); background:var(--carta); border-radius:12px; display:flex; align-items:center; justify-content:center;}
+  .gruppo-forn{font-family:'Oswald','Arial Narrow','Helvetica Neue Condensed','Impact',sans-serif; font-weight:700; font-size:13px; letter-spacing:.04em; text-transform:uppercase; color:var(--verde); margin:14px 2px 8px; padding-bottom:4px; border-bottom:1px solid var(--verde);}
 
   /* --- catalogo / bolla --- */
   .card-bolla{padding:16px; margin-bottom:14px; background:var(--crema); border:1.5px dashed var(--linea-input); border-radius:16px;}
@@ -235,6 +242,10 @@
   .stat-etic b{font-weight:700; flex:none;}
   .stat-traccia{height:6px; background:var(--linea); border-radius:999px; overflow:hidden;}
   .stat-traccia i{display:block; height:100%; background:var(--verde); border-radius:999px;}
+  .risp-tot{font-size:12px; background:var(--verde-tenue); border:1px solid var(--verde); border-radius:10px; padding:8px 10px; margin-bottom:10px; color:var(--verde);}
+  .risp-riga{padding:9px 0; border-bottom:1px solid var(--linea);}
+  .risp-riga:last-child{border-bottom:none; padding-bottom:2px;}
+  .risp-sub{font-size:11px; color:var(--grigio); margin-top:2px;}
 
   /* --- stampa ordine --- */
   #stampa-area{display:none;}
@@ -254,6 +265,7 @@
     .st-tab th{border:1px solid #111; background:#111; color:#fff; padding:6px; text-align:left; font-size:8px; letter-spacing:.1em; text-transform:uppercase; -webkit-print-color-adjust:exact; print-color-adjust:exact;}
     .st-tab td{border:1px solid #999; padding:5px 6px; vertical-align:top;}
     .st-tab tr{page-break-inside:avoid;}
+    .st-tab .st-gruppo td{background:#e8e8e2; font-weight:700; text-transform:uppercase; font-size:8px; letter-spacing:.12em; border:1px solid #999; -webkit-print-color-adjust:exact; print-color-adjust:exact;}
     .st-tot{margin-top:6px; font-size:10px; font-weight:700; letter-spacing:.1em; text-transform:uppercase;}
     .st-ctrl{margin-top:10px; font-size:10px; border:1px solid #999; padding:6px 8px;}
     .st-firma{display:flex; gap:48px; margin-top:36px;}
@@ -524,7 +536,7 @@ const st = {
   editStruttura:null, editStrutturaNome:"", nuovaStrutturaImp:null, confermaElimina:null,
   ordCat:"nome",
   operatoreId:null, pinInput:"", statPeriodo:"90", nuovoOperatore:null, confermaEliminaOp:null,
-  confermaEliminaOrd:false, modificaOrdine:null, svuotaCat:0, svuotaTxt:"",
+  confermaEliminaOrd:false, modificaOrdine:null, svuotaCat:0, svuotaTxt:"", confermaForn:"", raggruppaForn:null,
   bolla:{ fase:"idle", items:[], fornitoreId:"", errore:"" },
   focusFid:null, ultimoSalvataggio:null,
 };
@@ -573,6 +585,8 @@ const reparto = (id) => st.config?.reparti.find(r=>r.id===id);
 const fornitore = (id) => st.config?.fornitori.find(f=>f.id===id);
 const operatore = (id) => (st.config?.operatori||[]).find(o=>o.id===id);
 const opNome = (id) => operatore(id)?.nome || "";
+const ordineParziale = (o) => o.stato==="confermato" && (o.righe.some(r=>!r.ordinato) || !!o.proseguitoIn);
+const fornDiRiga = (r) => { const p = st.catalogo.find(x=>x.id===r.prodottoId); return (p && p.ultimoFornitoreId) ? p.ultimoFornitoreId : ""; };
 
 /* ---------- Badge informativi prodotto ---------- */
 function infoProdotto(p){
@@ -598,14 +612,24 @@ function sezTit(testo, icona){
 function cardOrdine(o){
   const s = struttura(o.strutturaId), r = reparto(o.repartoId), f = fornitore(o.fornitoreId);
   const fatti = o.righe.filter(x=>x.ordinato).length;
+  let etichettaForn = f?.nome || "";
+  if(!etichettaForn){
+    const nomi = [];
+    o.righe.forEach(rg=>{ const fid = fornDiRiga(rg); const n = fid ? fornitore(fid)?.nome : ""; if(n && !nomi.includes(n)) nomi.push(n); });
+    etichettaForn = nomi.length ? (nomi.slice(0,3).join(", ") + (nomi.length>3 ? " +"+(nomi.length-3) : "")) : "Tutti i fornitori";
+  }
   const pill = o.stato==="aperto"
     ? '<span class="pill pill-aperto">Aperto '+fatti+'/'+o.righe.length+'</span>'
-    : '<span class="pill pill-conf">Confermato</span>';
+    : (o.righe.some(r=>!r.ordinato)
+        ? '<span class="pill pill-parz">Parziale '+fatti+'/'+o.righe.length+'</span>'
+        : (o.proseguitoIn
+            ? '<span class="pill pill-parz">Parziale</span>'
+            : '<span class="pill pill-conf">Confermato</span>'));
   return '<button class="card card-ordine" onclick="A.apriDettaglio(\''+o.id+'\')">'
     +'<div class="co-riga"><div class="co-sx">'
     +'<span class="mono">'+esc(mono(s?.nome))+'</span>'
     +'<div style="min-width:0"><div class="co-nome">'+esc(s?.nome||"Struttura eliminata")+' · '+esc(r?.nome||"—")+'</div>'
-    +'<div class="co-sub">'+esc(o.numero)+' · '+fmtData(o.data)+' · <b>'+esc(f?.nome||"Tutti i fornitori")+'</b></div></div></div>'
+    +'<div class="co-sub">'+esc(o.numero)+' · '+fmtData(o.data)+' · <b>'+esc(etichettaForn)+'</b></div></div></div>'
     +'<div style="display:flex;align-items:center;gap:8px;flex:none">'+pill+'<span style="color:var(--argento)">'+ico("chevD",16)+'</span></div>'
     +'</div></button>';
 }
@@ -616,7 +640,8 @@ function ordiniFiltrati(){
     if(fl.strutturaId && o.strutturaId!==fl.strutturaId) return false;
     if(fl.repartoId && o.repartoId!==fl.repartoId) return false;
     if(fl.fornitoreId && o.fornitoreId!==fl.fornitoreId) return false;
-    if(fl.stato && o.stato!==fl.stato) return false;
+    if(fl.stato==="parziale"){ if(!ordineParziale(o)) return false; }
+    else if(fl.stato && o.stato!==fl.stato) return false;
     if(fl.dal && new Date(o.data) < new Date(fl.dal)) return false;
     if(fl.al && new Date(o.data) > new Date(fl.al+"T23:59:59")) return false;
     if(fl.testo){
@@ -662,7 +687,7 @@ function vOrdini(){
     h += '<div class="card filtri">'
       +'<select data-fid="f-str" onchange="A.setFiltro(\'strutturaId\', this.value)"><option value="">Tutte le strutture</option>'+opz(st.config.strutture, st.filtri.strutturaId, x=>esc(x.nome))+'</select>'
       +'<select data-fid="f-rep" onchange="A.setFiltro(\'repartoId\', this.value)"><option value="">Tutti i reparti</option>'+opz(st.config.reparti, st.filtri.repartoId, x=>esc(x.nome))+'</select>'
-      +'<select data-fid="f-sta" style="grid-column:span 2" onchange="A.setFiltro(\'stato\', this.value)"><option value="">Tutti gli stati</option><option value="aperto"'+(st.filtri.stato==="aperto"?" selected":"")+'>Aperto</option><option value="confermato"'+(st.filtri.stato==="confermato"?" selected":"")+'>Confermato</option></select>'
+      +'<select data-fid="f-sta" style="grid-column:span 2" onchange="A.setFiltro(\'stato\', this.value)"><option value="">Tutti gli stati</option><option value="aperto"'+(st.filtri.stato==="aperto"?" selected":"")+'>Aperto</option><option value="confermato"'+(st.filtri.stato==="confermato"?" selected":"")+'>Confermato</option><option value="parziale"'+(st.filtri.stato==="parziale"?" selected":"")+'>Parziale</option></select>'
       +'<button class="azzera" onclick="A.azzeraFiltri()">Azzera filtri</button>'
       +'</div>';
   }
@@ -831,9 +856,9 @@ function vDettaglio(){
     +'<span class="mono xl">'+esc(mono(s?.nome))+'</span>'
     +'<div style="min-width:0"><div class="to-nome">'+esc(s?.nome||"Struttura eliminata")+'</div>'
     +'<div class="to-sub">'+esc(r?.nome||"")+' · fornitore <b>'+esc(f?.nome||"Tutti i fornitori")+'</b></div>'
-    +'<div class="to-meta">'+esc(o.numero)+(o.derivatoDa?' · residuo di '+esc(o.derivatoDa):'')+' · creato '+fmtData(o.data)+' '+fmtOra(o.data)
+    +'<div class="to-meta">'+esc(o.numero)+(o.derivatoDa?' · residuo di '+esc(o.derivatoDa):'')+(o.proseguitoIn?' · prosegue in '+esc(o.proseguitoIn):'')+' · creato '+fmtData(o.data)+' '+fmtOra(o.data)
     +(o.creatoDa?' · di '+esc(opNome(o.creatoDa)||'?'):'')+(o.confermatoAt?' · confermato '+fmtData(o.confermatoAt)+' '+fmtOra(o.confermatoAt)+(o.confermatoDa?' da '+esc(opNome(o.confermatoDa)||'?'):''):'')+'</div></div></div>'
-    +'<div style="display:flex;flex-direction:column;align-items:flex-end;gap:6px">'+'<span class="pill '+(aperto?'pill-aperto':'pill-conf')+'">'+(aperto?'Aperto':'Confermato')+'</span>'+(aperto?'<button class="btn-icona" title="Modifica struttura, reparto o fornitore" onclick="A.apriModificaOrdine()">'+ico("matita",15)+'</button>':'')+'<button class="btn-icona" title="Stampa ordine" onclick="A.stampaOrdine(\''+o.id+'\')">'+ico("stampa",15)+'</button>'+'</div></div>'
+    +'<div style="display:flex;flex-direction:column;align-items:flex-end;gap:6px">'+'<span class="pill '+(aperto?'pill-aperto':(ordineParziale(o)?'pill-parz':'pill-conf'))+'">'+(aperto?'Aperto':(ordineParziale(o)?'Parziale':'Confermato'))+'</span>'+(aperto?'<button class="btn-icona" title="Modifica struttura, reparto o fornitore" onclick="A.apriModificaOrdine()">'+ico("matita",15)+'</button>':'')+'<button class="btn-icona" title="Stampa ordine" onclick="A.stampaOrdine(\''+o.id+'\')">'+ico("stampa",15)+'</button>'+'</div></div>'
     +'<div class="prog-etic"><span>Prodotti ordinati</span><b>'+fatti+' / '+o.righe.length+'</b></div>'
     +metro(pct)+'</div>';
 
@@ -854,6 +879,42 @@ function vDettaglio(){
       +'<button class="btn btn-dark" onclick="A.salvaModOrd(\''+o.id+'\')">Salva modifiche</button></div></div>';
   }
 
+  /* pannelli azione: si aprono qui in alto, a portata di mano */
+  if(aperto && st.aggiungiProdotti){
+    st.pickerCtx = { tipo:"ordine", id:o.id };
+    h += '<div class="form-inline"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">'
+      +'<b style="font-size:11px;letter-spacing:.14em;text-transform:uppercase">Aggiungi prodotti</b><button style="color:var(--grigio);padding:4px" onclick="A.chiudiAggiungiProdotti()">'+ico("x",16)+'</button></div>'
+      +picker()+'</div>';
+  }
+  if(aperto && st.confermaVisibile){
+    const selForn = !o.fornitoreId
+      ? '<select class="bolla-forn" style="margin:0 0 10px" onchange="A.setConfermaForn(this.value)"><option value="">Da quale fornitore hai ordinato? (facoltativo)</option>'
+        + st.config.fornitori.map(f=>'<option value="'+f.id+'"'+(st.confermaForn===f.id?' selected':'')+'>'+esc(f.nome)+'</option>').join("")
+        + '</select>'
+      : '';
+    if(fatti>0 && fatti<o.righe.length){
+      h += '<div class="avviso-conferma mb8">'
+        +'<p>Hai ordinato <b>'+fatti+'</b> prodotti su '+o.righe.length+'. Puoi chiudere ora la lista della merce ordinata e lasciare <b>aperta</b> una nuova lista con i '+(o.righe.length-fatti)+' prodotti rimanenti \u2014 oppure confermare tutto insieme.</p>'+selForn
+        +'<button class="btn btn-dark" style="width:100%;margin-bottom:8px" onclick="A.confermaParziale(\''+o.id+'\')">'+ico("okCerchio",15)+' Conferma gli ordinati \u00b7 il resto resta aperto</button>'
+        +'<div style="display:flex;gap:8px">'
+        +'<button class="btn btn-ghost" style="flex:1" onclick="A.nascondiConferma()">Annulla</button>'
+        +'<button class="btn btn-ghost" style="flex:1" onclick="A.confermaOrdine(\''+o.id+'\')">Conferma tutto</button>'
+        +'</div></div>';
+    } else {
+      const msg = fatti===0
+        ? 'Nessun prodotto \u00e8 ancora segnato come ordinato. Confermare comunque l\'ordine cos\u00ec com\'\u00e8?'
+        : 'Tutti i prodotti sono stati ordinati. Confermare e chiudere l\'ordine?';
+      h += '<div class="avviso-conferma mb8"><p>'+msg+'</p>'+selForn+'<div style="display:flex;gap:8px">'
+        +'<button class="btn btn-ghost" style="flex:1" onclick="A.nascondiConferma()">Annulla</button>'
+        +'<button class="btn btn-dark" style="flex:1" onclick="A.confermaOrdine(\''+o.id+'\')">Conferma</button></div></div>';
+    }
+  }
+  if(st.confermaEliminaOrd){
+    h += '<div class="avviso-conferma mb8" style="border-color:var(--rosso)"><p>Eliminare definitivamente l\'ordine '+esc(o.numero)+' dallo storico? L\'operazione non si pu\u00f2 annullare.</p>'
+      +'<div style="display:flex;gap:8px"><button class="btn btn-ghost" style="flex:1" onclick="A.annullaEliminaOrdine()">Annulla</button>'
+      +'<button class="btn btn-dark" style="flex:1;background:var(--rosso)" onclick="A.eliminaOrdine(\''+o.id+'\')">Elimina</button></div></div>';
+  }
+
   if(o.controllo){
     const c = o.controllo;
     h += '<div class="card" style="padding:12px;margin-bottom:12px">'
@@ -866,9 +927,9 @@ function vDettaglio(){
   }
   if(aperto) h += '<p class="suggerimento">Leggi i prodotti al rappresentante e tocca il cerchio quando l\'articolo è stato ordinato.</p>';
 
-  o.righe.forEach(rg=>{
+  const rigaHTML = (rg)=>{
     const p = st.catalogo.find(x=>x.id===rg.prodottoId);
-    h += '<div class="riga-check'+(rg.ordinato?' ok':'')+'"><div class="rc-corpo">'
+    return '<div class="riga-check'+(rg.ordinato?' ok':'')+'"><div class="rc-corpo">'
       +'<button class="rc-btn'+(rg.ordinato?' ok':'')+'" '+(aperto?'':'disabled ')+'onclick="A.toggleRiga(\''+o.id+'\',\''+rg.id+'\')">'
       +(rg.ordinato?ico("check",22):'ORDINA')+'</button>'
       +'<div class="rc-info"><div class="rc-nome">'+esc(rg.nome)+'</div>'
@@ -883,49 +944,51 @@ function vDettaglio(){
       +'</div>'
       +(aperto?'<div class="mini-azioni"><button onclick="A.apriNota(\''+rg.id+'\')">'+ico("matita",14)+'</button><button onclick="A.rimuoviRiga(\''+o.id+'\',\''+rg.id+'\')">'+ico("cestino",14)+'</button></div>':'')
       +'</div></div></div>';
-  });
+  };
 
+  /* sottoelenco fornitore per fornitore (per gli ordini "tutti i fornitori"
+     o con prodotti di fornitori diversi) */
+  const fornDistinti = new Set(o.righe.map(fornDiRiga));
+  const mostraRaggruppa = (!o.fornitoreId || fornDistinti.size > 1) && o.righe.length > 0;
+  const raggruppa = mostraRaggruppa && (st.raggruppaForn===null ? !o.fornitoreId : st.raggruppaForn);
+  if(mostraRaggruppa){
+    h += '<div style="display:flex;gap:6px;margin:0 0 10px">'
+      +'<button class="btn-mini'+(!raggruppa?' on':'')+'" onclick="A.setRaggruppa(false)">Elenco unico</button>'
+      +'<button class="btn-mini'+(raggruppa?' on':'')+'" onclick="A.setRaggruppa(true)">Per fornitore \u00b7 '+fornDistinti.size+'</button>'
+      +'</div>';
+  }
+  if(raggruppa){
+    const gruppi = new Map();
+    o.righe.forEach(rg=>{ const fid = fornDiRiga(rg); if(!gruppi.has(fid)) gruppi.set(fid, []); gruppi.get(fid).push(rg); });
+    const chiavi = [...gruppi.keys()].sort((a,b)=>{
+      const na = a ? (fornitore(a)?.nome||"~") : "~~";
+      const nb = b ? (fornitore(b)?.nome||"~") : "~~";
+      return na.localeCompare(nb);
+    });
+    chiavi.forEach(fid=>{
+      const rr = gruppi.get(fid);
+      const nomeG = fid ? (fornitore(fid)?.nome||"Fornitore eliminato") : "Senza fornitore";
+      const fattiG = rr.filter(x=>x.ordinato).length;
+      h += '<div class="gruppo-forn">'+esc(nomeG)+' \u00b7 '+fattiG+'/'+rr.length+'</div>';
+      rr.forEach(rg=>{ h += rigaHTML(rg); });
+    });
+  } else {
+    o.righe.forEach(rg=>{ h += rigaHTML(rg); });
+  }
+
+
+  /* barra azioni fissa: sempre visibile anche con liste lunghe */
+  h += '<div class="spazio"></div>';
+  h += '<div class="fascia-cta"><div class="barra-azioni">';
   if(aperto){
-    if(!st.aggiungiProdotti){
-      h += '<button class="btn-tratteggio mt8" onclick="A.apriAggiungiProdotti()">'+ico("piu",14)+' Aggiungi prodotti alla lista</button>';
-    } else {
-      st.pickerCtx = { tipo:"ordine", id:o.id };
-      h += '<div class="form-inline mt8"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">'
-        +'<b style="font-size:11px;letter-spacing:.14em;text-transform:uppercase">Aggiungi prodotti</b><button style="color:var(--grigio);padding:4px" onclick="A.chiudiAggiungiProdotti()">'+ico("x",16)+'</button></div>'
-        +picker()+'</div>';
-    }
-    if(!st.confermaVisibile){
-      h += '<button class="btn-cta mt12" onclick="A.mostraConferma()">'+ico("okCerchio",16)+' Conferma ordine</button>';
-    } else {
-      if(fatti>0 && fatti<o.righe.length){
-        h += '<div class="avviso-conferma mt12">'
-          +'<p>Hai ordinato <b>'+fatti+'</b> prodotti su '+o.righe.length+'. Puoi chiudere ora la lista della merce ordinata e lasciare <b>aperta</b> una nuova lista con i '+(o.righe.length-fatti)+' prodotti rimanenti \u2014 oppure confermare tutto insieme.</p>'
-          +'<button class="btn btn-dark" style="width:100%;margin-bottom:8px" onclick="A.confermaParziale(\''+o.id+'\')">'+ico("okCerchio",15)+' Conferma gli ordinati \u00b7 il resto resta aperto</button>'
-          +'<div style="display:flex;gap:8px">'
-          +'<button class="btn btn-ghost" style="flex:1" onclick="A.nascondiConferma()">Annulla</button>'
-          +'<button class="btn btn-ghost" style="flex:1" onclick="A.confermaOrdine(\''+o.id+'\')">Conferma tutto</button>'
-          +'</div></div>';
-      } else {
-        const msg = fatti===0
-          ? 'Nessun prodotto \u00e8 ancora segnato come ordinato. Confermare comunque l\'ordine cos\u00ec com\'\u00e8?'
-          : 'Tutti i prodotti sono stati ordinati. Confermare e chiudere l\'ordine?';
-        h += '<div class="avviso-conferma mt12"><p>'+msg+'</p><div style="display:flex;gap:8px">'
-          +'<button class="btn btn-ghost" style="flex:1" onclick="A.nascondiConferma()">Annulla</button>'
-          +'<button class="btn btn-dark" style="flex:1" onclick="A.confermaOrdine(\''+o.id+'\')">Conferma</button></div></div>';
-      }
-    }
+    h += '<button class="ba-btn" onclick="A.apriAggiungiProdotti()">'+ico("piu",15)+' Aggiungi</button>'
+      +'<button class="ba-primaria" onclick="A.mostraConferma()">'+ico("okCerchio",16)+' Conferma</button>'
+      +'<button class="ba-elimina" title="Elimina ordine" onclick="A.chiediEliminaOrdine()">'+ico("cestino",16)+'</button>';
   } else {
-    h += '<button class="btn-tratteggio mt12" onclick="A.riapriOrdine(\''+o.id+'\')">'+ico("riapri",14)+' Riapri ordine</button>';
+    h += '<button class="ba-btn" style="flex:2" onclick="A.riapriOrdine(\''+o.id+'\')">'+ico("riapri",15)+' Riapri ordine</button>'
+      +'<button class="ba-elimina" title="Elimina ordine" onclick="A.chiediEliminaOrdine()">'+ico("cestino",16)+'</button>';
   }
-
-  /* eliminazione dell'ordine (con conferma) */
-  if(!st.confermaEliminaOrd){
-    h += '<button class="btn-tratteggio mt8" style="border-color:var(--rosso);color:var(--rosso)" onclick="A.chiediEliminaOrdine()">'+ico("cestino",14)+' Elimina ordine</button>';
-  } else {
-    h += '<div class="avviso-conferma mt8" style="border-color:var(--rosso)"><p>Eliminare definitivamente l\'ordine '+esc(o.numero)+' dallo storico? L\'operazione non si pu\u00f2 annullare.</p>'
-      +'<div style="display:flex;gap:8px"><button class="btn btn-ghost" style="flex:1" onclick="A.annullaEliminaOrdine()">Annulla</button>'
-      +'<button class="btn btn-dark" style="flex:1;background:var(--rosso)" onclick="A.eliminaOrdine(\''+o.id+'\')">Elimina</button></div></div>';
-  }
+  h += '</div></div>';
   return h;
 }
 
@@ -994,7 +1057,7 @@ function vCatalogo(){
     h += '<div class="avviso-conferma"><p><b>'+okN+'</b> bolle elaborate'+(errN?' \u00b7 <b class="var-su">'+errN+' con errori</b>':'')+' \u00b7 <b>'+agg+'</b> prodotti nuovi \u00b7 <b>'+pr+'</b> prezzi registrati.</p>';
     b.risultati.forEach(r=>{
       h += '<div class="storico-voce">'+(r.ok
-        ? esc(r.file)+' \u2014 '+esc(r.fornitore||"fornitore n.d.")+' \u00b7 +'+(r.aggiunti||0)+' nuovi \u00b7 '+(r.aggiornati||0)+' prezzi'
+        ? esc(r.file)+' \u2014 '+esc(r.fornitore||"fornitore n.d.")+(r.struttura?' \u2192 '+esc(r.struttura):'')+' \u00b7 +'+(r.aggiunti||0)+' nuovi \u00b7 '+(r.aggiornati||0)+' prezzi'
         : '<b class="var-su">'+esc(r.file)+' \u2014 '+esc(r.errore||"errore")+'</b>')+'</div>';
     });
     if(vTot.length){
@@ -1079,6 +1142,9 @@ function vCatalogo(){
         : '<button class="btn btn-ghost mt8" onclick="A.registraControllo()">Registra esito sull\'ordine</button>');
       h += '</div>';
     }
+    h += '<select class="bolla-forn" onchange="A.strutturaBolla(this.value)"><option value="">Struttura di destinazione\u2026 (facoltativo)</option>'
+      + st.config.strutture.map(s=>'<option value="'+s.id+'"'+(b.strutturaId===s.id?' selected':'')+'>'+esc(s.nome)+'</option>').join("")
+      + '</select>';
     h += '<select class="bolla-forn" onchange="A.fornBolla(this.value)"><option value="">Fornitore della bolla (facoltativo)</option>'
       +(b.fornitoreNuovo ? '<option value="__nuovo__"'+(b.fornitoreId==="__nuovo__"?' selected':'')+'>Nuovo fornitore: '+esc(b.fornitoreNuovo)+' (letto dalla bolla)</option>' : '')
       +st.config.fornitori.map(f=>'<option value="'+f.id+'"'+(b.fornitoreId===f.id?' selected':'')+'>'+esc(f.nome)+'</option>').join("")+'</select>'
@@ -1272,7 +1338,37 @@ function vStatistiche(){
     .map(p=>({ nome:p.nome, da:p.prezzi[1].prezzo, a:p.prezzi[0].prezzo }))
     .filter(x=>Math.abs(x.a-x.da)>0.004)
     .sort((x,y)=>Math.abs((y.a-y.da)/y.da) - Math.abs((x.a-x.da)/x.da))
-    .slice(0,8);
+    .slice(0,20);
+
+  /* allarme risparmio: prodotti molto consumati con prezzi pesanti */
+  const consumo = new Map();
+  oo.forEach(o=>o.righe.forEach(r=>{
+    if(!r.ordinato) return;
+    const k = r.prodottoId || norm(r.nome);
+    const v = consumo.get(k) || { nome:r.nome, qty:0, pid:r.prodottoId||null };
+    v.qty += (Number(r.quantita)||1);
+    consumo.set(k, v);
+  }));
+  const allarmi = [];
+  consumo.forEach(v=>{
+    const p = v.pid ? st.catalogo.find(x=>x.id===v.pid) : st.catalogo.find(x=>norm(x.nome)===norm(v.nome));
+    if(!p || p.ultimoPrezzo==null) return;
+    let alt = null;
+    st.catalogo.forEach(q=>{
+      if(q.id===p.id || q.ultimoPrezzo==null) return;
+      if(!nomiSimili(p.nome, q.nome)) return;
+      if(q.ultimoPrezzo < p.ultimoPrezzo - 0.004 && (!alt || q.ultimoPrezzo < alt.ultimoPrezzo)) alt = q;
+    });
+    let rincaro = null;
+    if((p.prezzi||[]).length>=2 && p.prezzi[0].prezzo > p.prezzi[1].prezzo + 0.004){
+      rincaro = { da:p.prezzi[1].prezzo, a:p.prezzi[0].prezzo };
+    }
+    allarmi.push({ nome:p.nome, qty:v.qty, prezzo:p.ultimoPrezzo, spesa:v.qty*p.ultimoPrezzo,
+      forn:fornitore(p.ultimoFornitoreId)?.nome||"", alt, rincaro });
+  });
+  allarmi.sort((a,b)=>b.spesa-a.spesa);
+  const topAllarmi = allarmi.slice(0,8);
+  const risparmioPot = topAllarmi.reduce((s,a)=> s + (a.alt ? (a.prezzo - a.alt.ultimoPrezzo)*a.qty : 0), 0);
 
   const barre = (titolo, coppie) => {
     if(!coppie.length) return "";
@@ -1296,13 +1392,30 @@ function vStatistiche(){
     +'<div class="card"><b>'+st.catalogo.length+'</b><span>Prodotti a catalogo</span></div>'
     +'</div>';
   if(!oo.length) h += '<div class="vuoto mb12">Nessun ordine nel periodo scelto.</div>';
+  if(topAllarmi.length){
+    let x = '<div class="card" style="padding:12px;margin-bottom:12px;border-color:var(--verde)">'+sezTit("Allarme risparmio \u00b7 dove incidere");
+    x += '<p class="suggerimento" style="margin:0 0 10px">I prodotti pi\u00f9 consumati nel periodo con la spesa pi\u00f9 pesante: qui un ritocco di prezzo vale di pi\u00f9.</p>';
+    if(risparmioPot > 0.004){
+      x += '<div class="risp-tot">Risparmio potenziale stimato: <b>'+fmtEuro(risparmioPot)+'</b> nel periodo, passando alle alternative pi\u00f9 economiche gi\u00e0 a catalogo.</div>';
+    }
+    topAllarmi.forEach(a2=>{
+      x += '<div class="risp-riga"><div class="stat-etic"><span>'+esc(a2.nome)+(a2.forn?' \u00b7 '+esc(a2.forn):'')+'</span><b>'+fmtEuro(a2.spesa)+'</b></div>'
+        +'<div class="risp-sub">'+a2.qty+' ordinati \u00d7 '+fmtEuro(a2.prezzo)+'</div>';
+      if(a2.rincaro) x += '<div class="risp-sub var-su">\u25b2 Rincaro recente: '+fmtEuro(a2.rincaro.da)+' \u2192 '+fmtEuro(a2.rincaro.a)+' ('+pctVar(a2.rincaro.da,a2.rincaro.a)+') \u2014 da rinegoziare</div>';
+      if(a2.alt) x += '<div class="risp-sub var-giu">\u25bc Alternativa: '+esc(a2.alt.nome)+' a '+fmtEuro(a2.alt.ultimoPrezzo)
+        +(fornitore(a2.alt.ultimoFornitoreId)?.nome ? ' da '+esc(fornitore(a2.alt.ultimoFornitoreId).nome) : '')
+        +' ('+pctVar(a2.prezzo, a2.alt.ultimoPrezzo)+')</div>';
+      x += '</div>';
+    });
+    h += x + '</div>';
+  }
   h += barre("Ordini per struttura", perStruttura);
   h += barre("Ordini per fornitore", perFornitore);
   h += barre("Ordini per reparto", perReparto);
   if(perOperatore.length) h += barre("Ordini per operatore", perOperatore);
   h += barre("Prodotti pi\u00f9 ordinati (quantit\u00e0)", topProdotti);
   if(movimenti.length){
-    let x = '<div class="card" style="padding:12px;margin-bottom:12px">'+sezTit("Ultime variazioni di prezzo");
+    let x = '<div class="card" style="padding:12px;margin-bottom:12px">'+sezTit("Ultime variazioni di prezzo \u00b7 "+movimenti.length);
     movimenti.forEach(v=>{
       const su = v.a>v.da;
       x += '<div class="storico-voce">'+esc(v.nome)+': '+fmtEuro(v.da)+' \u2192 <b class="'+(su?'var-su':'var-giu')+'">'+fmtEuro(v.a)+' '+(su?'\u25b2':'\u25bc')+' '+pctVar(v.da,v.a)+'</b></div>';
@@ -1315,12 +1428,26 @@ function vStatistiche(){
 /* ---------- Stampa ordine ---------- */
 function stampaHTML(o){
   const s = struttura(o.strutturaId), r = reparto(o.repartoId), f = fornitore(o.fornitoreId);
-  const righeTab = o.righe.map(rg=>{
+  const rigaStampa = (rg)=>{
     const p = st.catalogo.find(x=>x.id===rg.prodottoId);
     const prezzo = (p && p.ultimoPrezzo!=null) ? fmtEuro(p.ultimoPrezzo) : "\u2014";
     return '<tr><td>'+esc(rg.nome)+'</td><td>'+rg.quantita+'</td><td>'+esc(rg.unita)+'</td><td>'+prezzo+'</td><td>'+esc(rg.nota||"")+'</td>'
       +'<td>'+(rg.ordinato ? '\u2713 '+fmtOra(rg.ordinatoAt) : '\u2014')+'</td></tr>';
-  }).join("");
+  };
+  let righeTab = "";
+  if(!o.fornitoreId){
+    const gr = new Map();
+    o.righe.forEach(rg=>{ const fid = fornDiRiga(rg); if(!gr.has(fid)) gr.set(fid, []); gr.get(fid).push(rg); });
+    [...gr.keys()].sort((a,b)=>{
+      const na = a ? (fornitore(a)?.nome||"~") : "~~"; const nb = b ? (fornitore(b)?.nome||"~") : "~~";
+      return na.localeCompare(nb);
+    }).forEach(fid=>{
+      righeTab += '<tr class="st-gruppo"><td colspan="6">'+esc(fid ? (fornitore(fid)?.nome||"Fornitore eliminato") : "Senza fornitore")+'</td></tr>'
+        + gr.get(fid).map(rigaStampa).join("");
+    });
+  } else {
+    righeTab = o.righe.map(rigaStampa).join("");
+  }
   let ctrl = "";
   if(o.controllo){
     const c = o.controllo;
@@ -1424,7 +1551,7 @@ const A = {
     st.svuotaCat=0; st.svuotaTxt=""; st.svuotaErr=false;
     st.vista={name:nome}; render();
   },
-  apriDettaglio(id){ st.vista={name:"dettaglio",ordineId:id}; st.confermaVisibile=false; st.aggiungiProdotti=false; st.notaAperta=null; st.confermaEliminaOrd=false; st.modificaOrdine=null; render(); },
+  apriDettaglio(id){ st.vista={name:"dettaglio",ordineId:id}; st.confermaVisibile=false; st.aggiungiProdotti=false; st.notaAperta=null; st.confermaEliminaOrd=false; st.modificaOrdine=null; st.raggruppaForn=null; render(); },
   tornaOrdini(){ st.vista={name:"ordini"}; st.confermaVisibile=false; st.aggiungiProdotti=false; render(); },
   stepIndietro(){ st.step=Math.max(0,st.step-1); render(); },
   chiudiForm(nome){ st[nome]=null; render(); },
@@ -1440,7 +1567,7 @@ const A = {
     const righe=[["Numero","Data","Struttura","Reparto","Fornitore","Stato","Prodotto","Quantità","Unità","Nota riga","Ordinato"]];
     ordiniFiltrati().forEach(o=>o.righe.forEach(r=>righe.push([
       o.numero, fmtData(o.data), struttura(o.strutturaId)?.nome||"", reparto(o.repartoId)?.nome||"",
-      fornitore(o.fornitoreId)?.nome||"", o.stato, r.nome, r.quantita, r.unita, r.nota||"", r.ordinato?"sì":"no"
+      fornitore(o.fornitoreId)?.nome||"", (ordineParziale(o)?"parziale":o.stato), r.nome, r.quantita, r.unita, r.nota||"", r.ordinato?"sì":"no"
     ])));
     const csv = righe.map(r=>r.map(c=>'"'+String(c).replace(/"/g,'""')+'"').join(";")).join("\n");
     const blob = new Blob(["\uFEFF"+csv],{type:"text/csv;charset=utf-8;"});
@@ -1550,15 +1677,18 @@ const A = {
     st.ordini = st.ordini.map(o=>o.id!==oid?o:{...o, righe:o.righe.map(r=>r.id!==rid?r:{...r,nota:val})});
     rinvia("salvaOrdini", salvaOrdini, 400);
   },
-  apriAggiungiProdotti(){ st.aggiungiProdotti=true; st.cercaPicker=""; st.rapido=null; render(); },
+  apriAggiungiProdotti(){ st.aggiungiProdotti=true; st.confermaVisibile=false; st.confermaEliminaOrd=false; st.cercaPicker=""; st.rapido=null; render(); window.scrollTo({top:0,behavior:"smooth"}); },
   chiudiAggiungiProdotti(){ st.aggiungiProdotti=false; render(); },
-  mostraConferma(){ st.confermaVisibile=true; render(); },
+  mostraConferma(){ st.confermaVisibile=true; st.aggiungiProdotti=false; st.confermaEliminaOrd=false; st.confermaForn=""; render(); window.scrollTo({top:0,behavior:"smooth"}); },
+  setConfermaForn(v){ st.confermaForn=v; },
+  setRaggruppa(v){ st.raggruppaForn=v; render(); },
   nascondiConferma(){ st.confermaVisibile=false; render(); },
   confermaOrdine(oid){
     const o = st.ordini.find(x=>x.id===oid);
     if(!o) return;
     const adesso = new Date().toISOString();
-    st.ordini = st.ordini.map(x=>x.id===oid?{...x,stato:"confermato",confermatoAt:adesso,confermatoDa:st.operatoreId||null}:x);
+    const fscelto = st.confermaForn || o.fornitoreId || "";
+    st.ordini = st.ordini.map(x=>x.id===oid?{...x,stato:"confermato",confermatoAt:adesso,confermatoDa:st.operatoreId||null,fornitoreId:fscelto}:x);
     salvaOrdini();
     /* arricchimento automatico dei prodotti (solo righe ordinate) */
     const righeOk = o.righe.filter(r=>r.ordinato);
@@ -1566,12 +1696,12 @@ const A = {
       st.catalogo = st.catalogo.map(p=>{
         const r = righeOk.find(x=>x.prodottoId===p.id);
         if(!r) return p;
-        const voce = { data:adesso, fornitoreId:o.fornitoreId, strutturaId:o.strutturaId, repartoId:o.repartoId, quantita:r.quantita, unita:r.unita };
-        return {...p, ultimoFornitoreId:o.fornitoreId||p.ultimoFornitoreId||null, ultimaStrutturaId:o.strutturaId, ultimoRepartoId:o.repartoId, ultimaData:adesso, storico:[voce,...(p.storico||[])].slice(0,10)};
+        const voce = { data:adesso, fornitoreId:fscelto||null, strutturaId:o.strutturaId, repartoId:o.repartoId, quantita:r.quantita, unita:r.unita };
+        return {...p, ultimoFornitoreId:fscelto||p.ultimoFornitoreId||null, ultimaStrutturaId:o.strutturaId, ultimoRepartoId:o.repartoId, ultimaData:adesso, storico:[voce,...(p.storico||[])].slice(0,10)};
       });
       salvaCatalogo();
     }
-    st.confermaVisibile=false; render();
+    st.confermaVisibile=false; st.confermaForn=""; render();
   },
   confermaParziale(oid){
     const o = st.ordini.find(x=>x.id===oid); if(!o) return;
@@ -1579,31 +1709,32 @@ const A = {
     const residue = o.righe.filter(r=>!r.ordinato);
     if(!ordinate.length || !residue.length){ A.confermaOrdine(oid); return; }
     const adesso = new Date().toISOString();
+    const fscelto = st.confermaForn || o.fornitoreId || "";
     /* la nuova lista aperta con i prodotti non ancora ordinati */
     const residuo = { id:uid("o"), numero:"ORD-"+String(st.ordini.length+1).padStart(4,"0"), data:adesso,
       strutturaId:o.strutturaId, repartoId:o.repartoId, fornitoreId:o.fornitoreId,
       stato:"aperto", righe:residue, confermatoAt:null,
       creatoDa:st.operatoreId||o.creatoDa||null, derivatoDa:o.numero };
     /* l'ordine originale si chiude con la sola merce ordinata */
-    st.ordini = st.ordini.map(x=>x.id!==oid?x:{...x, righe:ordinate, stato:"confermato", confermatoAt:adesso, confermatoDa:st.operatoreId||null});
+    st.ordini = st.ordini.map(x=>x.id!==oid?x:{...x, righe:ordinate, stato:"confermato", confermatoAt:adesso, confermatoDa:st.operatoreId||null, proseguitoIn:residuo.numero, fornitoreId:fscelto});
     st.ordini = [residuo, ...st.ordini];
     salvaOrdini();
     /* arricchimento dei prodotti come nella conferma normale */
     st.catalogo = st.catalogo.map(p=>{
       const r = ordinate.find(x=>x.prodottoId===p.id);
       if(!r) return p;
-      const voce = { data:adesso, fornitoreId:o.fornitoreId, strutturaId:o.strutturaId, repartoId:o.repartoId, quantita:r.quantita, unita:r.unita };
-      return {...p, ultimoFornitoreId:o.fornitoreId||p.ultimoFornitoreId||null, ultimaStrutturaId:o.strutturaId, ultimoRepartoId:o.repartoId, ultimaData:adesso, storico:[voce, ...(p.storico||[])].slice(0,10)};
+      const voce = { data:adesso, fornitoreId:fscelto||null, strutturaId:o.strutturaId, repartoId:o.repartoId, quantita:r.quantita, unita:r.unita };
+      return {...p, ultimoFornitoreId:fscelto||p.ultimoFornitoreId||null, ultimaStrutturaId:o.strutturaId, ultimoRepartoId:o.repartoId, ultimaData:adesso, storico:[voce, ...(p.storico||[])].slice(0,10)};
     });
     salvaCatalogo();
-    st.confermaVisibile=false;
+    st.confermaVisibile=false; st.confermaForn="";
     st.vista={name:"ordini"}; render();
   },
   riapriOrdine(oid){
     st.ordini = st.ordini.map(x=>x.id===oid?{...x,stato:"aperto",confermatoAt:null}:x);
     salvaOrdini(); render();
   },
-  chiediEliminaOrdine(){ st.confermaEliminaOrd=true; render(); },
+  chiediEliminaOrdine(){ st.confermaEliminaOrd=true; st.confermaVisibile=false; st.aggiungiProdotti=false; render(); window.scrollTo({top:0,behavior:"smooth"}); },
   annullaEliminaOrdine(){ st.confermaEliminaOrd=false; render(); },
   eliminaOrdine(oid){
     st.ordini = st.ordini.filter(o=>o.id!==oid);
@@ -1773,6 +1904,7 @@ const A = {
   nomeBolla(idx,val){ st.bolla.items[idx].nome = val.toUpperCase(); },
   catBolla(idx,val){ st.bolla.items[idx].categoria = val; render(); },
   fornBolla(val){ st.bolla.fornitoreId = val; render(); },
+  strutturaBolla(val){ st.bolla.strutturaId = val; render(); },
   annullaBolla(){ st.bolla={fase:"idle",items:[],fornitoreId:"",errore:""}; render(); },
   prezzoBolla(idx,val){
     const n = parseFloat(String(val).replace(",", "."));
@@ -1818,6 +1950,7 @@ const A = {
         }
       } else { fornId = null; }
     }
+    const strId = st.bolla.strutturaId || null;
     const variazioni = [];
     let aggiornati = 0;
     /* prodotti esistenti selezionati: registro il prezzo e aggiorno fornitore/data */
@@ -1833,12 +1966,13 @@ const A = {
         prezzi:[voce, ...(p.prezzi||[])].slice(0,20),
         ultimoPrezzo:i.prezzo,
         ultimoFornitoreId:fornId||p.ultimoFornitoreId||null,
+        ultimaStrutturaId:strId||p.ultimaStrutturaId||null,
         ultimaData:adesso };
     });
     /* prodotti nuovi selezionati */
     const nuovi = st.bolla.items.filter(i=>i.selezionato&&!i.esiste).map(i=>({
       id:uid("p"), nome:i.nome, categoria:i.categoria, note:"",
-      ultimoFornitoreId:fornId, ultimaStrutturaId:null, ultimoRepartoId:null,
+      ultimoFornitoreId:fornId, ultimaStrutturaId:strId, ultimoRepartoId:null,
       ultimaData:fornId?adesso:null, storico:[], origine:"bolla",
       ultimoPrezzo:(i.prezzo!=null?i.prezzo:null),
       prezzi:(i.prezzo!=null?[{ data:adesso, prezzo:i.prezzo, fornitoreId:fornId, fonte:"bolla" }]:[]),
@@ -1917,6 +2051,14 @@ function trovaFornitore(nomeLetto){
     return N && (L===N || L.includes(N) || N.includes(L));
   }) || null;
 }
+function trovaStruttura(nomeLetto){
+  const L = piegaNome(nomeLetto);
+  if(!L) return null;
+  return st.config.strutture.find(s=>{
+    const N = piegaNome(s.nome);
+    return N && (L===N || L.includes(N) || N.includes(L));
+  }) || null;
+}
 function pulisciNomeForn(s){
   let x = String(s).replace(/\s*[\/\-]\s*/g," ")
     .replace(/\b(S\.?R\.?L\.?|G\.?M\.?B\.?H\.?|S\.?P\.?A\.?|SNC|SAS|AG|KG|OHG|INTERSERVICE)\b/gi,"")
@@ -1967,7 +2109,7 @@ async function analizzaBollaFile(file){
     +'Estrai ogni prodotto con: PREZZO UNITARIO in euro (colonna prezzo, NON l\'importo totale di riga), QUANTITA consegnata come numero, e unita di misura um. Usa null per i valori non leggibili. Ignora codici articolo, IVA, sconti e totali. Ignora il testo scritto a mano.\n'
     +'Se i prodotti sono piu\' di 40, elenca solo i primi 40.\n'
     +'Rispondi SOLO con JSON valido e COMPATTO (una sola riga), senza testo prima o dopo e senza backtick, in questo formato:\n'
-    +'{"fornitore":"nome fornitore se leggibile, altrimenti null","prodotti":[{"nome":"NOME PRODOTTO IN MAIUSCOLO","categoria":"una tra: '+CATEGORIE.join(", ")+'","prezzo":12.34,"quantita":3,"um":"KG"}]}';
+    +'{"fornitore":"nome fornitore se leggibile, altrimenti null","destinatario":"nome della struttura o del destinatario di consegna (campo Destinatario/Destinazione) se leggibile, altrimenti null","prodotti":[{"nome":"NOME PRODOTTO IN MAIUSCOLO","categoria":"una tra: '+CATEGORIE.join(", ")+'","prezzo":12.34,"quantita":3,"um":"KG"}]}';
   if(!PROXY_LETTURA_BOLLE) throw { msg:"Proxy di lettura non configurato" };
   let risposta;
   try{
@@ -1993,7 +2135,11 @@ async function analizzaBollaFile(file){
   if(!items.length) throw { msg:"nessun prodotto riconosciuto" };
   const nomeForn = json.fornitore ? String(json.fornitore).trim() : "";
   const fMatch = nomeForn ? trovaFornitore(nomeForn) : null;
-  return { items, fornitoreId: fMatch ? fMatch.id : null, fornitoreNuovo: (nomeForn && !fMatch) ? pulisciNomeForn(nomeForn) : "" };
+  const nomeDest = json.destinatario ? String(json.destinatario).trim() : "";
+  const sMatch = nomeDest ? trovaStruttura(nomeDest) : null;
+  return { items, fornitoreId: fMatch ? fMatch.id : null,
+    fornitoreNuovo: (nomeForn && !fMatch) ? pulisciNomeForn(nomeForn) : "",
+    strutturaId: sMatch ? sMatch.id : "" };
 }
 
 /* applica una bolla senza revisione manuale (modalita' in serie) */
@@ -2008,6 +2154,7 @@ function applicaBollaAutomatica(an){
       st.config.fornitori.push(f); salvaConfig(); fornId = f.id;
     }
   }
+  const strId = an.strutturaId || null;
   const variazioni = []; let aggiornati = 0;
   st.catalogo = st.catalogo.map(p=>{
     const i = an.items.find(x=>x.esiste && x.prezzo!=null && norm(x.nome)===norm(p.nome));
@@ -2018,17 +2165,17 @@ function applicaBollaAutomatica(an){
     aggiornati++;
     const voce = { data:adesso, prezzo:i.prezzo, fornitoreId:fornId||p.ultimoFornitoreId||null, fonte:"bolla" };
     return {...p, prezzi:[voce, ...(p.prezzi||[])].slice(0,20), ultimoPrezzo:i.prezzo,
-      ultimoFornitoreId:fornId||p.ultimoFornitoreId||null, ultimaData:adesso };
+      ultimoFornitoreId:fornId||p.ultimoFornitoreId||null, ultimaStrutturaId:strId||p.ultimaStrutturaId||null, ultimaData:adesso };
   });
   const nuovi = an.items.filter(i=>!i.esiste).map(i=>({
     id:uid("p"), nome:i.nome, categoria:i.categoria, note:"",
-    ultimoFornitoreId:fornId, ultimaStrutturaId:null, ultimoRepartoId:null,
+    ultimoFornitoreId:fornId, ultimaStrutturaId:strId, ultimoRepartoId:null,
     ultimaData:fornId?adesso:null, storico:[], origine:"bolla",
     ultimoPrezzo:(i.prezzo!=null?i.prezzo:null),
     prezzi:(i.prezzo!=null?[{ data:adesso, prezzo:i.prezzo, fornitoreId:fornId, fonte:"bolla" }]:[]),
   }));
   st.catalogo = [...st.catalogo, ...nuovi];
-  return { fornitore: fornId ? (fornitore(fornId)?.nome||"") : "", aggiunti:nuovi.length, aggiornati, variazioni };
+  return { fornitore: fornId ? (fornitore(fornId)?.nome||"") : "", struttura: strId ? (struttura(strId)?.nome||"") : "", aggiunti:nuovi.length, aggiornati, variazioni };
 }
 
 /* coda di elaborazione: piu' bolle in serie, salvataggio unico alla fine */
@@ -2066,7 +2213,7 @@ async function leggiBolla(file){
       +'Estrai ogni prodotto con: PREZZO UNITARIO in euro (colonna prezzo, NON l\'importo totale di riga), QUANTITA consegnata (colonna quantita) come numero, e unita di misura um (KG, NR, CAR, STK, GL, SA...). Usa null per i valori non leggibili. Ignora codici articolo, IVA, sconti e totali. Ignora il testo scritto a mano.\n'
       +'Se i prodotti sono piu\' di 40, elenca solo i primi 40.\n'
       +'Rispondi SOLO con JSON valido e COMPATTO (una sola riga), senza testo prima o dopo e senza backtick, in questo formato:\n'
-      +'{"fornitore":"nome fornitore se leggibile, altrimenti null","prodotti":[{"nome":"NOME PRODOTTO IN MAIUSCOLO","categoria":"una tra: '+CATEGORIE.join(", ")+'","prezzo":12.34,"quantita":3,"um":"KG"}]}';
+      +'{"fornitore":"nome fornitore se leggibile, altrimenti null","destinatario":"nome della struttura o del destinatario di consegna (campo Destinatario/Destinazione) se leggibile, altrimenti null","prodotti":[{"nome":"NOME PRODOTTO IN MAIUSCOLO","categoria":"una tra: '+CATEGORIE.join(", ")+'","prezzo":12.34,"quantita":3,"um":"KG"}]}';
     if(!PROXY_LETTURA_BOLLE) throw { msg:"La lettura automatica delle bolle non e' configurata su questa installazione: manca l'URL del proxy (vedi README-pubblicazione, sezione Lettura bolle). Puoi comunque inserire i prodotti a mano dal catalogo." };
     let risposta;
     try{
@@ -2115,9 +2262,12 @@ async function leggiBolla(file){
     if(!items.length) throw { msg:"Nessun prodotto riconosciuto nel documento: controlla che sia una bolla e che il testo sia leggibile." };
     const nomeForn = json.fornitore ? String(json.fornitore).trim() : "";
     const fMatch = nomeForn ? trovaFornitore(nomeForn) : null;
+    const nomeDest = json.destinatario ? String(json.destinatario).trim() : "";
+    const sMatch = nomeDest ? trovaStruttura(nomeDest) : null;
     st.bolla = { fase:"revisione", items,
       fornitoreId: fMatch ? fMatch.id : (nomeForn ? "__nuovo__" : ""),
       fornitoreNuovo: (nomeForn && !fMatch) ? pulisciNomeForn(nomeForn) : "",
+      strutturaId: sMatch ? sMatch.id : "",
       errore:"" };
   }catch(e){
     st.bolla = { fase:"idle", items:[], fornitoreId:"",
