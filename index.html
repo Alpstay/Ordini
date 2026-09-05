@@ -831,7 +831,7 @@ function vDettaglio(){
     +'<span class="mono xl">'+esc(mono(s?.nome))+'</span>'
     +'<div style="min-width:0"><div class="to-nome">'+esc(s?.nome||"Struttura eliminata")+'</div>'
     +'<div class="to-sub">'+esc(r?.nome||"")+' · fornitore <b>'+esc(f?.nome||"Tutti i fornitori")+'</b></div>'
-    +'<div class="to-meta">'+esc(o.numero)+' · creato '+fmtData(o.data)+' '+fmtOra(o.data)
+    +'<div class="to-meta">'+esc(o.numero)+(o.derivatoDa?' · residuo di '+esc(o.derivatoDa):'')+' · creato '+fmtData(o.data)+' '+fmtOra(o.data)
     +(o.creatoDa?' · di '+esc(opNome(o.creatoDa)||'?'):'')+(o.confermatoAt?' · confermato '+fmtData(o.confermatoAt)+' '+fmtOra(o.confermatoAt)+(o.confermatoDa?' da '+esc(opNome(o.confermatoDa)||'?'):''):'')+'</div></div></div>'
     +'<div style="display:flex;flex-direction:column;align-items:flex-end;gap:6px">'+'<span class="pill '+(aperto?'pill-aperto':'pill-conf')+'">'+(aperto?'Aperto':'Confermato')+'</span>'+(aperto?'<button class="btn-icona" title="Modifica struttura, reparto o fornitore" onclick="A.apriModificaOrdine()">'+ico("matita",15)+'</button>':'')+'<button class="btn-icona" title="Stampa ordine" onclick="A.stampaOrdine(\''+o.id+'\')">'+ico("stampa",15)+'</button>'+'</div></div>'
     +'<div class="prog-etic"><span>Prodotti ordinati</span><b>'+fatti+' / '+o.righe.length+'</b></div>'
@@ -897,12 +897,22 @@ function vDettaglio(){
     if(!st.confermaVisibile){
       h += '<button class="btn-cta mt12" onclick="A.mostraConferma()">'+ico("okCerchio",16)+' Conferma ordine</button>';
     } else {
-      const msg = fatti < o.righe.length
-        ? 'Attenzione: '+(o.righe.length-fatti)+' prodotti non sono ancora segnati come ordinati. Confermare comunque?'
-        : 'Tutti i prodotti sono stati ordinati. Confermare e chiudere l\'ordine?';
-      h += '<div class="avviso-conferma mt12"><p>'+msg+'</p><div style="display:flex;gap:8px">'
-        +'<button class="btn btn-ghost" style="flex:1" onclick="A.nascondiConferma()">Annulla</button>'
-        +'<button class="btn btn-dark" style="flex:1" onclick="A.confermaOrdine(\''+o.id+'\')">Conferma</button></div></div>';
+      if(fatti>0 && fatti<o.righe.length){
+        h += '<div class="avviso-conferma mt12">'
+          +'<p>Hai ordinato <b>'+fatti+'</b> prodotti su '+o.righe.length+'. Puoi chiudere ora la lista della merce ordinata e lasciare <b>aperta</b> una nuova lista con i '+(o.righe.length-fatti)+' prodotti rimanenti \u2014 oppure confermare tutto insieme.</p>'
+          +'<button class="btn btn-dark" style="width:100%;margin-bottom:8px" onclick="A.confermaParziale(\''+o.id+'\')">'+ico("okCerchio",15)+' Conferma gli ordinati \u00b7 il resto resta aperto</button>'
+          +'<div style="display:flex;gap:8px">'
+          +'<button class="btn btn-ghost" style="flex:1" onclick="A.nascondiConferma()">Annulla</button>'
+          +'<button class="btn btn-ghost" style="flex:1" onclick="A.confermaOrdine(\''+o.id+'\')">Conferma tutto</button>'
+          +'</div></div>';
+      } else {
+        const msg = fatti===0
+          ? 'Nessun prodotto \u00e8 ancora segnato come ordinato. Confermare comunque l\'ordine cos\u00ec com\'\u00e8?'
+          : 'Tutti i prodotti sono stati ordinati. Confermare e chiudere l\'ordine?';
+        h += '<div class="avviso-conferma mt12"><p>'+msg+'</p><div style="display:flex;gap:8px">'
+          +'<button class="btn btn-ghost" style="flex:1" onclick="A.nascondiConferma()">Annulla</button>'
+          +'<button class="btn btn-dark" style="flex:1" onclick="A.confermaOrdine(\''+o.id+'\')">Conferma</button></div></div>';
+      }
     }
   } else {
     h += '<button class="btn-tratteggio mt12" onclick="A.riapriOrdine(\''+o.id+'\')">'+ico("riapri",14)+' Riapri ordine</button>';
@@ -1562,6 +1572,32 @@ const A = {
       salvaCatalogo();
     }
     st.confermaVisibile=false; render();
+  },
+  confermaParziale(oid){
+    const o = st.ordini.find(x=>x.id===oid); if(!o) return;
+    const ordinate = o.righe.filter(r=>r.ordinato);
+    const residue = o.righe.filter(r=>!r.ordinato);
+    if(!ordinate.length || !residue.length){ A.confermaOrdine(oid); return; }
+    const adesso = new Date().toISOString();
+    /* la nuova lista aperta con i prodotti non ancora ordinati */
+    const residuo = { id:uid("o"), numero:"ORD-"+String(st.ordini.length+1).padStart(4,"0"), data:adesso,
+      strutturaId:o.strutturaId, repartoId:o.repartoId, fornitoreId:o.fornitoreId,
+      stato:"aperto", righe:residue, confermatoAt:null,
+      creatoDa:st.operatoreId||o.creatoDa||null, derivatoDa:o.numero };
+    /* l'ordine originale si chiude con la sola merce ordinata */
+    st.ordini = st.ordini.map(x=>x.id!==oid?x:{...x, righe:ordinate, stato:"confermato", confermatoAt:adesso, confermatoDa:st.operatoreId||null});
+    st.ordini = [residuo, ...st.ordini];
+    salvaOrdini();
+    /* arricchimento dei prodotti come nella conferma normale */
+    st.catalogo = st.catalogo.map(p=>{
+      const r = ordinate.find(x=>x.prodottoId===p.id);
+      if(!r) return p;
+      const voce = { data:adesso, fornitoreId:o.fornitoreId, strutturaId:o.strutturaId, repartoId:o.repartoId, quantita:r.quantita, unita:r.unita };
+      return {...p, ultimoFornitoreId:o.fornitoreId||p.ultimoFornitoreId||null, ultimaStrutturaId:o.strutturaId, ultimoRepartoId:o.repartoId, ultimaData:adesso, storico:[voce, ...(p.storico||[])].slice(0,10)};
+    });
+    salvaCatalogo();
+    st.confermaVisibile=false;
+    st.vista={name:"ordini"}; render();
   },
   riapriOrdine(oid){
     st.ordini = st.ordini.map(x=>x.id===oid?{...x,stato:"aperto",confermatoAt:null}:x);
