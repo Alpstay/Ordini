@@ -951,21 +951,51 @@ function vCatalogo(){
   }
 
   h += '<div class="card card-bolla"><h3>'+ico("doc",15)+' Carica bolla d\'acquisto</h3>'
-    +'<p class="desc">Trascina il PDF della bolla nella zona qui sotto (o toccala per scegliere un file): i prodotti vengono letti in automatico e aggiunti al catalogo, così restano memorizzati per gli ordini futuri.</p>';
+    +'<p class="desc">Una bolla sola: lettura con revisione manuale. Pi\u00f9 bolle insieme (trascinate o da cartella): elaborazione automatica in serie \u2014 prodotti nuovi, prezzi e fornitori vengono registrati da soli, con rapporto finale.</p>';
   if(b.errore) h += '<div class="err-box">'+esc(b.errore)
     +(b.dettaglio?'<div class="err-det">Dettaglio tecnico: '+esc(b.dettaglio)+'</div>':'')
     +'</div>';
 
   if(b.fase==="idle"){
-    h += '<input id="file-bolla" type="file" accept="image/*,application/pdf" class="hidden" onchange="A.fileBolla(this)">'
+    h += '<input id="file-bolla" type="file" multiple accept="image/*,application/pdf" class="hidden" onchange="A.fileBolla(this)">'
+      +'<input id="cartella-bolla" type="file" webkitdirectory multiple class="hidden" onchange="A.fileBolla(this)">'
       +'<div class="dropzone" id="dropzone-bolla" onclick="document.getElementById(\'file-bolla\').click()" '
       +'ondragover="A.dragBolla(event,true)" ondragenter="A.dragBolla(event,true)" ondragleave="A.dragBolla(event,false)" ondrop="A.dropBolla(event)">'
       +ico("carica",26)
-      +'<b>Trascina qui il PDF della bolla</b>'
-      +'<span>oppure tocca per scegliere un file — PDF o foto</span>'
-      +'</div>';
+      +'<b>Trascina qui uno o pi\u00f9 PDF delle bolle</b>'
+      +'<span>oppure tocca per scegliere i file \u2014 con pi\u00f9 bolle l\'elaborazione parte in serie, automatica</span>'
+      +'</div>'
+      +'<button class="btn btn-ghost mt8" style="width:100%" onclick="document.getElementById(\'cartella-bolla\').click()">'+ico("carica",14)+' Scegli una cartella intera (tutte le bolle dentro)</button>';
   } else if(b.fase==="caricamento"){
     h += '<div class="caricamento"><span class="spin">'+ico("giro",16)+'</span> Lettura della bolla in corso…</div>';
+  } else if(b.fase==="batch"){
+    const fatte = b.risultati.length, tot = b.coda || 1;
+    const agg = b.risultati.reduce((s,r)=>s+(r.aggiunti||0),0);
+    const pr  = b.risultati.reduce((s,r)=>s+(r.aggiornati||0),0);
+    const err = b.risultati.filter(r=>!r.ok).length;
+    h += '<div class="caricamento"><span class="spin">'+ico("giro",16)+'</span> Bolla '+b.corrente+' di '+tot+' \u2014 '+esc(b.fileNome||"")+'</div>'
+      + metro(Math.round(fatte/tot*100))
+      + '<div style="font-size:11px;color:var(--grigio);margin-top:6px">'+agg+' prodotti nuovi \u00b7 '+pr+' prezzi registrati \u00b7 '+err+' errori</div>';
+  } else if(b.fase==="esitoBatch"){
+    const okN = b.risultati.filter(r=>r.ok).length, errN = b.risultati.length-okN;
+    const agg = b.risultati.reduce((s,r)=>s+(r.aggiunti||0),0);
+    const pr  = b.risultati.reduce((s,r)=>s+(r.aggiornati||0),0);
+    let vTot = []; b.risultati.forEach(r=>{ (r.variazioni||[]).forEach(v=>vTot.push(v)); });
+    h += '<div class="avviso-conferma"><p><b>'+okN+'</b> bolle elaborate'+(errN?' \u00b7 <b class="var-su">'+errN+' con errori</b>':'')+' \u00b7 <b>'+agg+'</b> prodotti nuovi \u00b7 <b>'+pr+'</b> prezzi registrati.</p>';
+    b.risultati.forEach(r=>{
+      h += '<div class="storico-voce">'+(r.ok
+        ? esc(r.file)+' \u2014 '+esc(r.fornitore||"fornitore n.d.")+' \u00b7 +'+(r.aggiunti||0)+' nuovi \u00b7 '+(r.aggiornati||0)+' prezzi'
+        : '<b class="var-su">'+esc(r.file)+' \u2014 '+esc(r.errore||"errore")+'</b>')+'</div>';
+    });
+    if(vTot.length){
+      h += '<div style="font-size:10px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;margin:8px 0 2px">Variazioni di prezzo rilevate \u00b7 '+vTot.length+'</div>';
+      vTot.slice(0,15).forEach(v=>{
+        const su = v.a>v.da;
+        h += '<div class="storico-voce">'+esc(v.nome)+': '+fmtEuro(v.da)+' \u2192 <b class="'+(su?'var-su':'var-giu')+'">'+fmtEuro(v.a)+' '+(su?'\u25b2':'\u25bc')+' '+pctVar(v.da,v.a)+'</b></div>';
+      });
+      if(vTot.length>15) h += '<div class="storico-voce">\u2026 e altre '+(vTot.length-15)+' (nello storico prezzi dei prodotti)</div>';
+    }
+    h += '<button class="btn btn-dark mt8" onclick="A.chiudiEsitoBolla()">OK</button></div>';
   } else if(b.fase==="esito"){
     h += '<div class="avviso-conferma"><p><b>'+b.aggiunti+'</b> prodotti nuovi aggiunti \u00b7 <b>'+b.aggiornati+'</b> prezzi registrati.</p>';
     if((b.variazioni||[]).length){
@@ -1677,9 +1707,18 @@ const A = {
 
   /* bolla d'acquisto */
   fileBolla(input){
-    const f = input.files && input.files[0];
+    const files = Array.from(input.files||[]);
     input.value = "";
-    if(f) leggiBolla(f);
+    A.avviaFileBolle(files);
+  },
+  avviaFileBolle(files){
+    const validi = files.filter(f=>f.type==="application/pdf" || (f.type||"").startsWith("image/") || /\.pdf$/i.test(f.name));
+    if(!validi.length){
+      st.bolla = { fase:"idle", items:[], fornitoreId:"", errore:"Nessun PDF o foto valida tra i file scelti." };
+      render(); return;
+    }
+    if(validi.length===1) leggiBolla(validi[0]);
+    else elaboraCoda(validi);
   },
   dragBolla(ev, dentro){
     ev.preventDefault(); ev.stopPropagation();
@@ -1690,17 +1729,9 @@ const A = {
     ev.preventDefault(); ev.stopPropagation();
     const el = document.getElementById("dropzone-bolla");
     if(el) el.classList.remove("trascina");
-    const f = ev.dataTransfer && ev.dataTransfer.files && ev.dataTransfer.files[0];
-    if(!f) return;
-    if(f.type !== "application/pdf" && !(f.type||"").startsWith("image/")){
-      st.bolla = { fase:"idle", items:[], fornitoreId:"", errore:"Formato non supportato: trascina un PDF o una foto della bolla." };
-      render(); return;
-    }
-    if(ev.dataTransfer.files.length > 1){
-      st.bolla = { fase:"idle", items:[], fornitoreId:"", errore:"" };
-      /* più file trascinati: leggo il primo */
-    }
-    leggiBolla(f);
+    const files = Array.from(ev.dataTransfer && ev.dataTransfer.files || []);
+    if(!files.length) return;
+    A.avviaFileBolle(files);
   },
   toggleBolla(idx){ st.bolla.items[idx].selezionato = !st.bolla.items[idx].selezionato; render(); },
   nomeBolla(idx,val){ st.bolla.items[idx].nome = val.toUpperCase(); },
@@ -1883,6 +1914,104 @@ function confrontaBollaOrdine(o){
   });
   const mancanti = righe.filter(r=>!usate.has(r.id));
   return { ok, extra, mancanti, ordineId:o.id };
+}
+
+/* analisi di un singolo file bolla: restituisce voci e fornitore riconosciuto */
+async function analizzaBollaFile(file){
+  let blocco;
+  const tipo = file.type || (/\.pdf$/i.test(file.name) ? "application/pdf" : "");
+  if(tipo === "application/pdf"){
+    if(file.size > 30*1024*1024) throw { msg:"PDF oltre 30 MB" };
+    blocco = { type:"document", source:{ type:"base64", media_type:"application/pdf", data: await leggiBase64(file) } };
+  } else {
+    const img = await comprimiImmagine(file);
+    blocco = { type:"image", source:{ type:"base64", media_type: img.media, data: img.b64 } };
+  }
+  const prompt = 'Questa e\' una bolla di acquisto / documento di consegna (gastronomia e hotellerie).\n'
+    +'Estrai ogni prodotto con: PREZZO UNITARIO in euro (colonna prezzo, NON l\'importo totale di riga), QUANTITA consegnata come numero, e unita di misura um. Usa null per i valori non leggibili. Ignora codici articolo, IVA, sconti e totali. Ignora il testo scritto a mano.\n'
+    +'Se i prodotti sono piu\' di 40, elenca solo i primi 40.\n'
+    +'Rispondi SOLO con JSON valido e COMPATTO (una sola riga), senza testo prima o dopo e senza backtick, in questo formato:\n'
+    +'{"fornitore":"nome fornitore se leggibile, altrimenti null","prodotti":[{"nome":"NOME PRODOTTO IN MAIUSCOLO","categoria":"una tra: '+CATEGORIE.join(", ")+'","prezzo":12.34,"quantita":3,"um":"KG"}]}';
+  if(!PROXY_LETTURA_BOLLE) throw { msg:"Proxy di lettura non configurato" };
+  let risposta;
+  try{
+    risposta = await fetch(PROXY_LETTURA_BOLLE,{
+      method:"POST", headers:{ "Content-Type":"application/json" },
+      body: JSON.stringify({ model:"claude-sonnet-4-6", max_tokens:1000,
+        messages:[{ role:"user", content:[blocco, {type:"text", text:prompt}] }] }),
+    });
+  }catch(e){ throw { msg:"connessione al proxy non riuscita" }; }
+  let data;
+  try{ data = await risposta.json(); }catch(e){ throw { msg:"risposta non valida (stato "+risposta.status+")" }; }
+  if(data.error) throw { msg:String(data.error.message||data.error.type||"errore del servizio") };
+  const testo = (data.content||[]).filter(c=>c.type==="text").map(c=>c.text).join("\n");
+  if(!testo.trim()) throw { msg:"documento non leggibile" };
+  const json = estraiJSON(testo);
+  const visti = new Set();
+  const items = (json.prodotti||[]).map(p=>{
+    const nome = norm(p.nome);
+    const prezzo = (typeof p.prezzo==="number" && isFinite(p.prezzo) && p.prezzo>0) ? Math.round(p.prezzo*100)/100 : null;
+    const prodotto = st.catalogo.find(x=>norm(x.nome)===nome) || null;
+    return { nome, categoria: CATEGORIE.includes(p.categoria)?p.categoria:"Altro", prezzo, esiste: !!prodotto };
+  }).filter(i=>{ if(!i.nome || visti.has(i.nome)) return false; visti.add(i.nome); return true; });
+  if(!items.length) throw { msg:"nessun prodotto riconosciuto" };
+  const nomeForn = json.fornitore ? String(json.fornitore).trim() : "";
+  const fMatch = nomeForn ? trovaFornitore(nomeForn) : null;
+  return { items, fornitoreId: fMatch ? fMatch.id : null, fornitoreNuovo: (nomeForn && !fMatch) ? pulisciNomeForn(nomeForn) : "" };
+}
+
+/* applica una bolla senza revisione manuale (modalita' in serie) */
+function applicaBollaAutomatica(an){
+  const adesso = new Date().toISOString();
+  let fornId = an.fornitoreId;
+  if(!fornId && an.fornitoreNuovo){
+    const gia = trovaFornitore(an.fornitoreNuovo);
+    if(gia){ fornId = gia.id; }
+    else {
+      const f = { id:uid("f"), nome:an.fornitoreNuovo, telefono:"", preferito:false };
+      st.config.fornitori.push(f); salvaConfig(); fornId = f.id;
+    }
+  }
+  const variazioni = []; let aggiornati = 0;
+  st.catalogo = st.catalogo.map(p=>{
+    const i = an.items.find(x=>x.esiste && x.prezzo!=null && norm(x.nome)===norm(p.nome));
+    if(!i) return p;
+    const prec = (p.ultimoPrezzo!=null) ? p.ultimoPrezzo : null;
+    if(prec!=null && Math.abs(i.prezzo-prec) <= 0.004) return p; /* invariato */
+    if(prec!=null) variazioni.push({ nome:p.nome, da:prec, a:i.prezzo });
+    aggiornati++;
+    const voce = { data:adesso, prezzo:i.prezzo, fornitoreId:fornId||p.ultimoFornitoreId||null, fonte:"bolla" };
+    return {...p, prezzi:[voce, ...(p.prezzi||[])].slice(0,20), ultimoPrezzo:i.prezzo,
+      ultimoFornitoreId:fornId||p.ultimoFornitoreId||null, ultimaData:adesso };
+  });
+  const nuovi = an.items.filter(i=>!i.esiste).map(i=>({
+    id:uid("p"), nome:i.nome, categoria:i.categoria, note:"",
+    ultimoFornitoreId:fornId, ultimaStrutturaId:null, ultimoRepartoId:null,
+    ultimaData:fornId?adesso:null, storico:[], origine:"bolla",
+    ultimoPrezzo:(i.prezzo!=null?i.prezzo:null),
+    prezzi:(i.prezzo!=null?[{ data:adesso, prezzo:i.prezzo, fornitoreId:fornId, fonte:"bolla" }]:[]),
+  }));
+  st.catalogo = [...st.catalogo, ...nuovi];
+  return { fornitore: fornId ? (fornitore(fornId)?.nome||"") : "", aggiunti:nuovi.length, aggiornati, variazioni };
+}
+
+/* coda di elaborazione: piu' bolle in serie, salvataggio unico alla fine */
+async function elaboraCoda(files){
+  st.bolla = { fase:"batch", coda:files.length, corrente:0, fileNome:"", risultati:[], items:[], fornitoreId:"", errore:"" };
+  render();
+  for(let k=0; k<files.length; k++){
+    st.bolla.corrente = k+1; st.bolla.fileNome = files[k].name; render();
+    try{
+      const an = await analizzaBollaFile(files[k]);
+      const ris = applicaBollaAutomatica(an);
+      st.bolla.risultati.push({ file:files[k].name, ok:true, ...ris });
+    }catch(e){
+      st.bolla.risultati.push({ file:files[k].name, ok:false, errore:(e && e.msg) ? e.msg : "lettura non riuscita" });
+    }
+  }
+  salvaCatalogo();
+  st.bolla = { fase:"esitoBatch", risultati:st.bolla.risultati, items:[], fornitoreId:"", errore:"" };
+  render();
 }
 
 async function leggiBolla(file){
