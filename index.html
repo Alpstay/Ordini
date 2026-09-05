@@ -214,7 +214,52 @@
   .card-bolla .desc{font-size:12px; color:var(--grigio); margin:6px 0 12px;}
   .err-box{font-size:12px; color:var(--rosso); background:var(--rosso-fondo); border:1px solid var(--rosso); border-radius:10px; padding:8px 12px; margin-bottom:8px;}
   .err-det{font-size:10px; color:#8A5B58; margin-top:4px; word-break:break-word;}
-  .bolla-item{display:flex; align-items:center; gap:8px; border:1px solid var(--linea-input); border-radius:10px; padding:6px 8px; margin-bottom:6px; background:var(--carta);}
+  .bolla-item{display:block; border:1px solid var(--linea-input); border-radius:10px; padding:6px 8px; margin-bottom:6px; background:var(--carta);}
+  .bi-riga1{display:flex; align-items:center; gap:8px;}
+  .bi-riga2{display:flex; align-items:center; gap:8px; margin-top:4px; padding-left:30px; flex-wrap:wrap;}
+  .bolla-item .bi-prezzo{flex:none; width:76px; text-align:right; border:1px solid var(--linea-input); border-radius:6px; padding:4px 6px;}
+  .var-su{color:var(--rosso); font-size:11px; font-weight:700;}
+  .var-giu{color:var(--verde); font-size:11px; font-weight:700;}
+  .ctrl-tit{font-size:10px; font-weight:700; letter-spacing:.14em; text-transform:uppercase; margin:8px 0 2px; color:var(--grigio-verde);}
+  .ctrl-tit.var-su{color:var(--rosso);}
+
+  /* --- PIN e statistiche --- */
+  .pin-input{width:180px; max-width:100%; text-align:center; font-size:28px; letter-spacing:.4em; padding:12px 8px 12px 16px; border:1.5px solid var(--verde); border-radius:12px; background:var(--carta);}
+  .kpi{display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-bottom:12px;}
+  .kpi .card{padding:12px 14px;}
+  .kpi b{font-family:'Oswald','Arial Narrow','Helvetica Neue Condensed','Impact',sans-serif; font-weight:700; font-size:28px; display:block; color:var(--inchiostro); line-height:1.1;}
+  .kpi span{font-size:9px; font-weight:600; letter-spacing:.2em; text-transform:uppercase; color:var(--grigio-verde);}
+  .stat-riga{margin-bottom:9px;}
+  .stat-etic{display:flex; justify-content:space-between; gap:8px; font-size:12px; margin-bottom:3px;}
+  .stat-etic span{min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;}
+  .stat-etic b{font-weight:700; flex:none;}
+  .stat-traccia{height:6px; background:var(--linea); border-radius:999px; overflow:hidden;}
+  .stat-traccia i{display:block; height:100%; background:var(--verde); border-radius:999px;}
+
+  /* --- stampa ordine --- */
+  #stampa-area{display:none;}
+  @media print{
+    body{background:#fff;}
+    #app{display:none !important;}
+    #stampa-area{display:block;}
+    .st-doc{font-family:'Poppins','Segoe UI',system-ui,sans-serif; color:#111; font-size:12px; padding:8px;}
+    .st-testa{display:flex; justify-content:space-between; align-items:flex-end; gap:16px; border-bottom:2.5px solid #111; padding-bottom:8px; margin-bottom:12px;}
+    .st-eyebrow{font-size:9px; font-weight:600; letter-spacing:.3em; text-transform:uppercase; color:#666;}
+    .st-titolo{font-family:'Oswald','Arial Narrow','Helvetica Neue Condensed','Impact',sans-serif; font-size:26px; font-weight:700; text-transform:uppercase; letter-spacing:.02em;}
+    .st-meta{font-size:10px; color:#444; text-align:right;}
+    .st-info{width:100%; border-collapse:collapse; margin-bottom:12px; font-size:11px;}
+    .st-info td{padding:5px 8px; border:1px solid #bbb;}
+    .st-info td:nth-child(odd){font-weight:700; text-transform:uppercase; font-size:8px; letter-spacing:.12em; background:#f2f2ee; width:15%; white-space:nowrap;}
+    .st-tab{width:100%; border-collapse:collapse; font-size:11px;}
+    .st-tab th{border:1px solid #111; background:#111; color:#fff; padding:6px; text-align:left; font-size:8px; letter-spacing:.1em; text-transform:uppercase; -webkit-print-color-adjust:exact; print-color-adjust:exact;}
+    .st-tab td{border:1px solid #999; padding:5px 6px; vertical-align:top;}
+    .st-tab tr{page-break-inside:avoid;}
+    .st-tot{margin-top:6px; font-size:10px; font-weight:700; letter-spacing:.1em; text-transform:uppercase;}
+    .st-ctrl{margin-top:10px; font-size:10px; border:1px solid #999; padding:6px 8px;}
+    .st-firma{display:flex; gap:48px; margin-top:36px;}
+    .st-firma span{flex:1; border-top:1px solid #111; padding-top:5px; font-size:8px; text-transform:uppercase; letter-spacing:.16em; color:#444;}
+    .st-pie{margin-top:24px; text-align:center; font-size:9px; letter-spacing:.3em; text-transform:uppercase; color:#777;}
+  }
   .bolla-item.esiste{background:var(--fondo); opacity:.6;}
   .bolla-item input{flex:1; border:none; background:transparent; font-size:12px; min-width:0;}
   .bolla-item select{font-size:11px; border:1px solid var(--linea-input); border-radius:6px; padding:4px; background:var(--carta); max-width:110px;}
@@ -246,6 +291,13 @@
   details summary{font-size:10px; letter-spacing:.06em; text-transform:uppercase; color:var(--grigio-verde); cursor:pointer; display:inline-flex; align-items:center; gap:4px; margin-top:6px; list-style:none; font-weight:600;}
   details summary::-webkit-details-marker{display:none;}
   .storico-voce{font-size:11px; color:var(--grigio); margin-top:3px;}
+
+  /* --- impostazioni / anagrafica --- */
+  .btn-icona{padding:8px; border-radius:10px; color:var(--grigio-verde);}
+  .btn-icona:hover{background:var(--verde-tenue); color:var(--verde);}
+  .imp-riga{display:flex; align-items:center; gap:10px; background:var(--carta); border:1px solid var(--linea); border-radius:12px; padding:10px 12px; margin-bottom:8px;}
+  .imp-nome{font-weight:600; color:var(--inchiostro); font-size:14px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;}
+  .imp-sub{font-size:11px; color:var(--grigio);}
 
   .schermo-carico{min-height:100vh; display:flex; align-items:center; justify-content:center; gap:10px; color:var(--grigio-verde); font-size:12px; letter-spacing:.14em; text-transform:uppercase;}
   .indietro-link{display:inline-flex; align-items:center; gap:6px; font-size:10px; font-weight:600; letter-spacing:.18em; text-transform:uppercase; color:var(--grigio-verde); margin-bottom:10px; padding:4px; margin-left:-4px; border-radius:8px;}
@@ -298,6 +350,8 @@ const norm = (s) => (s||"").trim().toUpperCase().replace(/\s+/g," ");
 const esc = (s) => String(s??"").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;").replace(/'/g,"&#39;");
 const fmtData = (iso) => iso ? new Date(iso).toLocaleDateString("it-IT",{day:"2-digit",month:"2-digit",year:"2-digit"}) : "—";
 const fmtOra = (iso) => iso ? new Date(iso).toLocaleTimeString("it-IT",{hour:"2-digit",minute:"2-digit"}) : "";
+const fmtEuro = (n) => "\u20ac " + Number(n).toFixed(2).replace(".", ",");
+const pctVar = (da, a) => { const v = ((a-da)/da)*100; return (v>0?"+":"")+v.toFixed(1).replace(".", ",")+"%"; };
 /* monogramma della struttura: iniziali al posto delle emoji */
 const mono = (nome) => {
   const parti = (nome||"").trim().split(/\s+/).filter(Boolean);
@@ -331,6 +385,9 @@ function ico(nome, s=16){
     okCerchio:'<path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.27"/>',
     nota:'<path d="M15.5 3H5a2 2 0 0 0-2 2v14c0 1.1.9 2 2 2h14a2 2 0 0 0 2-2V8.5L15.5 3Z"/><path d="M15 3v6h6"/>',
     giro:'<path d="M21 12a9 9 0 1 1-6.219-8.56"/>',
+    ingranaggio:'<path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/>',
+    grafico:'<line x1="12" y1="20" x2="12" y2="10"/><line x1="18" y1="20" x2="18" y2="4"/><line x1="6" y1="20" x2="6" y2="16"/>',
+    stampa:'<polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/>',
     stella:'<polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>',
   }[nome] || '';
   return '<svg width="'+s+'" height="'+s+'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">'+p+'</svg>';
@@ -379,6 +436,80 @@ const seedCatalogo = [
   P("SALVIETTE LIMONE","Non food"),P("SACCHI NERI IMMONDIZIA","Non food"),
 ];
 
+/* Voci scritte a mano sullo screenshot, integrate su richiesta.
+   (MAIONESE era gia' presente come "MAIONESE (MAIO)".) */
+const INTEGRAZIONE_V2 = [
+  P("OLIO EXTRA","Gastronomia"),
+  P("CREMA PISTACCHIO PER PANNA COTTA","Dolci e gelato"),
+  P("GRISSINI","Pane e grissini"),
+  P("SCHUTTELBROT","Pane e grissini"),
+  P("LIMONCELLO","Bevande"),
+  P("SALVIETTE UMIDIFICATE","Non food"),
+];
+
+/* Prodotti demo letti dalle sei bolle PDF (Foppa, Woerndle, Minus),
+   gia' associati al fornitore e alla data del documento. */
+const PB = (nome, categoria, forn, dataISO, prezzo) => ({
+  ...P(nome, categoria, forn),
+  ultimaData: dataISO, origine: "bolla",
+  ultimoPrezzo: (prezzo==null ? null : prezzo),
+  prezzi: (prezzo==null ? [] : [{ data:dataISO, prezzo:prezzo, fornitoreId:forn, fonte:"bolla" }]),
+});
+const INTEGRAZIONE_V3 = [
+  /* Foppa - DDT 103398 del 26/08/2026 */
+  PB("FORMAGGIO ALTA BADIA 1/2 MILA","Latticini","f-foppa","2026-08-26T08:00:00.000Z",19.46),
+  PB("MANZO ROASTBEEF INGLESE COTTO","Gastronomia","f-foppa","2026-08-26T08:00:00.000Z",29.54),
+  PB("FORMAGGIO AL VINO CUVEE BURGEISER","Latticini","f-foppa","2026-08-26T08:00:00.000Z",14.23),
+  PB("TRUCIOLI DI CIOCCOLATO SCURO 5X9MM 700G","Dolci e gelato","f-foppa","2026-08-26T08:00:00.000Z",15.51),
+  PB("GELATO VANIGLIA 4,75L CONG. EMOZIONI","Dolci e gelato","f-foppa","2026-08-26T08:00:00.000Z",14.20),
+  PB("STRUDEL MELE PASTA FROLLA PRONTO 2X1KG STABINGER","Pasticceria","f-foppa","2026-08-26T08:00:00.000Z",22.49),
+  PB("INSALATA RUSSA CONG. OROGEL","Gastronomia","f-foppa","2026-08-26T08:00:00.000Z",2.67),
+  PB("GELATO CIOCCO-MENTA 4,75L CONG. EMOZIONI","Dolci e gelato","f-foppa","2026-08-26T08:00:00.000Z",14.70),
+  /* Foppa - DDT 102145 del 24/08/2026 */
+  PB("MOZZARELLA BUFALA DOP BOCCONCINI 25G 250G","Latticini","f-foppa","2026-08-24T08:00:00.000Z",3.39),
+  PB("VEGETOP PANNA 33,5% 1L DEBIC","Latticini","f-foppa","2026-08-24T08:00:00.000Z",3.30),
+  PB("SAVOIARDI 300G VICENZI","Pasticceria","f-foppa","2026-08-24T08:00:00.000Z",2.19),
+  PB("OLIVE TAGGIASCHE DENOCCIOLATE OLIO EVO 900G SALVO","Gastronomia","f-foppa","2026-08-24T08:00:00.000Z",15.83),
+  PB("POMODORI PELATI GASTRONOMIA 3/1 MUTTI","Gastronomia","f-foppa","2026-08-24T08:00:00.000Z",5.49),
+  PB("TUORLO D'UOVA SPECIALE 1L PASTA GIALLA ELITE","Gastronomia","f-foppa","2026-08-24T08:00:00.000Z",11.24),
+  PB("CUBETTI DI SPECK 4X4MM 600G RECLA","Gastronomia","f-foppa","2026-08-24T08:00:00.000Z",11.73),
+  PB("VASCHETTE ALLUMINIO 88MM 120ML 100 PEZZI","Non food","f-foppa","2026-08-24T08:00:00.000Z",15.41),
+  PB("NUTELLA CIOCCOLATA 3KG","Marmellate e spalmabili","f-foppa","2026-08-24T08:00:00.000Z",26.54),
+  PB("SPUGNA 9X14X3,5CM 10 PEZZI VILEDA","Non food","f-foppa","2026-08-24T08:00:00.000Z",9.88),
+  PB("CUMINO INTERO 600G WIBERG","Gastronomia","f-foppa","2026-08-24T08:00:00.000Z",12.58),
+  PB("MAGGIORANA LIOFILIZZATA 60G WIBERG","Gastronomia","f-foppa","2026-08-24T08:00:00.000Z",21.88),
+  PB("PEPERONCINO TRITATO 190G WIBERG","Gastronomia","f-foppa","2026-08-24T08:00:00.000Z",9.13),
+  /* Foppa - DDT 92863 del 08/08/2026 */
+  PB("TE ENGLISH BREAKFAST BIO POMPADOUR 20 FILTRI","Tè e infusi","f-foppa","2026-08-08T08:00:00.000Z",4.65),
+  PB("TE ERBE AROMATICHE ALTO ADIGE BIO POMPADOUR 20 FILTRI","Tè e infusi","f-foppa","2026-08-08T08:00:00.000Z",5.15),
+  PB("TE CAMOMILLA BIO POMPADOUR 20 FILTRI","Tè e infusi","f-foppa","2026-08-08T08:00:00.000Z",4.65),
+  PB("TE MENTA PIPERITA BIO POMPADOUR 20 FILTRI","Tè e infusi","f-foppa","2026-08-08T08:00:00.000Z",4.61),
+  PB("TE NERO DARJEELING BIO POMPADOUR 20 FILTRI","Tè e infusi","f-foppa","2026-08-08T08:00:00.000Z",4.65),
+  /* Woerndle - DDT B/78536 del 08/06/2026 */
+  PB("ACCIUGHE FILETTI OLIO OLIVA SICILIA 720G FISH FOR CHEF","Gastronomia","f-worndle","2026-06-08T08:00:00.000Z",16.30),
+  PB("GORGONZOLA 1/8 DOP 1,5KG CA NOVARA","Latticini","f-worndle","2026-06-08T08:00:00.000Z",9.46),
+  PB("MOZZARELLA FIOR DI LATTE CAMMINO D'ORO 1KG GOLDSTEIG","Latticini","f-worndle","2026-06-08T08:00:00.000Z",4.19),
+  PB("BRIE FRANCESE 60% 1,2KG","Latticini","f-worndle","2026-06-08T08:00:00.000Z",9.29),
+  PB("SALSICCIA SALAME PICCANTE LUNGA 0,9KG VIVA MARIA","Gastronomia","f-worndle","2026-06-08T08:00:00.000Z",13.44),
+  PB("FARINA GRANO TENERO 0 ROSSO NR.2 5KG MERANER MUEHLE","Gastronomia","f-worndle","2026-06-08T08:00:00.000Z",6.35),
+  PB("FARINA GRANO TENERO 00 PIZZA CAPRI 10KG MERANER MUEHLE","Gastronomia","f-worndle","2026-06-08T08:00:00.000Z",18.12),
+  PB("PEPERONI VENETI PICCANTI 1500G ZUCCATO","Gastronomia","f-worndle","2026-06-08T08:00:00.000Z",9.35),
+  PB("FRUTTI DEL CAPPERO IN ACETO 1600G DEMETRA","Gastronomia","f-worndle","2026-06-08T08:00:00.000Z",14.98),
+  PB("PORCINI TRIFOLATI CAMPESINO BUSTA 700G DEMETRA","Gastronomia","f-worndle","2026-06-08T08:00:00.000Z",13.59),
+  PB("OLIVE TAGGIASCHE DENOCCIOLATE OLIO OLIVA 950G ANFOSSO","Gastronomia","f-worndle","2026-06-08T08:00:00.000Z",13.85),
+  PB("CARCIOFI BOCCIOLI OLIO GIRASOLE 2400G DEMETRA","Gastronomia","f-worndle","2026-06-08T08:00:00.000Z",22.31),
+  PB("POLPA POMODORO BUSTA 5KG MUTTI","Gastronomia","f-worndle","2026-06-08T08:00:00.000Z",11.63),
+  PB("LIMONCELLO RIFLESSI 28% 1L POLINI","Bevande","f-worndle","2026-06-08T08:00:00.000Z",8.41),
+  /* Woerndle - DDT C/120765 del 10/06/2026 */
+  PB("LIEVITO FRESCO 25G GR-500 LIEVITAL","Gastronomia","f-worndle","2026-06-10T08:00:00.000Z",5.91),
+  PB("CHIPS PATATA DOLCE VIOLA 500G TROPICAL CRUNCH","Gastronomia","f-worndle","2026-06-10T08:00:00.000Z",11.81),
+  PB("PECORINO ROMANO DOP GRATTUGIATO 1KG","Latticini","f-worndle","2026-06-10T08:00:00.000Z",20.33),
+  /* Minus - DDT 47901 A del 08/06/2026 */
+  PB("POMMES DIPPERS CON BUCCIA 4X2,5KG LAMB WESTON","Gastronomia","f-minus","2026-06-08T08:00:00.000Z",2.72),
+  PB("GRATIN CHEESE 100G 6X1,5KG AVIKO","Gastronomia","f-minus","2026-06-08T08:00:00.000Z",6.58),
+  PB("DESSERT SCHOKOKUGEL 85G 1X12 BRIGADE","Dolci e gelato","f-minus","2026-06-08T08:00:00.000Z",42.13),
+];
+
 /* ---------- Stato ---------- */
 const st = {
   config:null, catalogo:null, ordini:null, caricamento:true, erroreSalvataggio:false,
@@ -390,6 +521,10 @@ const st = {
   cercaPicker:"", rapido:null, pickerCtx:{ tipo:"draft" },
   confermaVisibile:false, aggiungiProdotti:false, notaAperta:null,
   cercaCat:"", catFiltro:"", editProd:null, nuovoProd:null, selPref:{},
+  editStruttura:null, editStrutturaNome:"", nuovaStrutturaImp:null, confermaElimina:null,
+  ordCat:"nome",
+  operatoreId:null, pinInput:"", statPeriodo:"90", nuovoOperatore:null, confermaEliminaOp:null,
+  confermaEliminaOrd:false, modificaOrdine:null, svuotaCat:0, svuotaTxt:"",
   bolla:{ fase:"idle", items:[], fornitoreId:"", errore:"" },
   focusFid:null, ultimoSalvataggio:null,
 };
@@ -436,15 +571,18 @@ function rinvia(chiave, fn, ms){ clearTimeout(debTimer[chiave]); debTimer[chiave
 const struttura = (id) => st.config?.strutture.find(s=>s.id===id);
 const reparto = (id) => st.config?.reparti.find(r=>r.id===id);
 const fornitore = (id) => st.config?.fornitori.find(f=>f.id===id);
+const operatore = (id) => (st.config?.operatori||[]).find(o=>o.id===id);
+const opNome = (id) => operatore(id)?.nome || "";
 
 /* ---------- Badge informativi prodotto ---------- */
 function infoProdotto(p){
   const s = struttura(p.ultimaStrutturaId), r = reparto(p.ultimoRepartoId), f = fornitore(p.ultimoFornitoreId);
-  if(!s && !r && !f && !p.note) return "";
+  if(!s && !r && !f && !p.note && p.ultimoPrezzo==null) return "";
   let h = '<div>';
   if(s) h += '<span class="mini-badge">'+esc(s.nome)+'</span>';
   if(r) h += '<span class="mini-badge">'+esc(r.nome)+'</span>';
   if(f) h += '<span class="mini-badge forte">'+esc(f.nome)+(p.ultimaData?' · '+fmtData(p.ultimaData):'')+'</span>';
+  if(p.ultimoPrezzo!=null) h += '<span class="mini-badge forte">'+fmtEuro(p.ultimoPrezzo)+'</span>';
   if(p.note) h += '<span class="mini-badge">'+ico("nota",9)+' '+esc(p.note)+'</span>';
   return h+'</div>';
 }
@@ -466,8 +604,8 @@ function cardOrdine(o){
   return '<button class="card card-ordine" onclick="A.apriDettaglio(\''+o.id+'\')">'
     +'<div class="co-riga"><div class="co-sx">'
     +'<span class="mono">'+esc(mono(s?.nome))+'</span>'
-    +'<div style="min-width:0"><div class="co-nome">'+esc(s?.nome||"Struttura")+' · '+esc(r?.nome||"—")+'</div>'
-    +'<div class="co-sub">'+esc(o.numero)+' · '+fmtData(o.data)+' · <b>'+esc(f?.nome||"—")+'</b></div></div></div>'
+    +'<div style="min-width:0"><div class="co-nome">'+esc(s?.nome||"Struttura eliminata")+' · '+esc(r?.nome||"—")+'</div>'
+    +'<div class="co-sub">'+esc(o.numero)+' · '+fmtData(o.data)+' · <b>'+esc(f?.nome||"Tutti i fornitori")+'</b></div></div></div>'
     +'<div style="display:flex;align-items:center;gap:8px;flex:none">'+pill+'<span style="color:var(--argento)">'+ico("chevD",16)+'</span></div>'
     +'</div></button>';
 }
@@ -500,29 +638,6 @@ function vOrdini(){
   if(aperti.length){
     h += '<section class="mb12">'+sezTit("Da confermare")+aperti.map(cardOrdine).join("")+'</section>';
   }
-
-  /* prodotti preferiti: pronti per un nuovo ordine */
-  const prefProd = st.catalogo.filter(p=>p.preferito).sort((a,b)=>a.nome.localeCompare(b.nome));
-  const nSel = prefProd.filter(p=>st.selPref[p.id]).length;
-  h += '<section class="mb12">'+sezTit("Preferiti · pronti da ordinare");
-  if(!prefProd.length){
-    h += '<div class="vuoto">Tocca la stella su un prodotto — nel Catalogo o nella selezione prodotti — per averlo qui, pronto da ordinare.</div>';
-  } else {
-    h += '<div class="pref-lista">';
-    prefProd.forEach(p=>{
-      const on = !!st.selPref[p.id];
-      h += '<div class="pref-riga'+(on?' on':'')+'">'
-        +'<button class="pk-box'+(on?' on':'')+'" onclick="A.toggleSelPref(\''+p.id+'\')">'+(on?ico("check",14):'')+'</button>'
-        +'<button class="testo" onclick="A.toggleSelPref(\''+p.id+'\')"><span class="pk-nome">'+esc(p.nome)+'</span>'+infoProdotto(p)+'</button>'
-        +'<button class="stellina" title="Togli dai preferiti" onclick="A.togglePrefProd(\''+p.id+'\')">'+stella(true,15)+'</button>'
-        +'</div>';
-    });
-    h += '</div>';
-    h += nSel
-      ? '<button class="btn-cta mt8" onclick="A.ordinaPreferiti()">'+ico("lista",16)+' Crea ordine · '+nSel+' prodotti</button>'
-      : '<p class="suggerimento mt8">Seleziona i prodotti, poi crea l\'ordine in un tocco: struttura, reparto e fornitore li scegli subito dopo.</p>';
-  }
-  h += '</section>';
 
   h += '<section><div style="display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:10px">'
     +'<div class="sez-tit" style="margin:0;flex:1">'+'<em>'+ico("storia",12)+' Storico ordini</em><span class="filo"></span></div>'
@@ -605,7 +720,9 @@ function vNuovo(){
       +(f.telefono?'<span class="telef">'+ico("tel",11)+' '+esc(f.telefono)+'</span>':'')+'</button>'
       +'<button class="stellabtn" title="Preferito" onclick="A.togglePreferito(\''+f.id+'\')">'+stella(f.preferito)+'</button></div>';
     let h = stepTesta("Fornitore");
-    if(pref.length) h += sezTit("Preferiti")+pref.map(riga).join("");
+    h += sezTit("Vuoi scegliere un fornitore?");
+    h += '<button class="scelta" onclick="A.scegliFornitore(\'\')">No \u2014 prosegui con <b>&nbsp;tutti i fornitori</b></button>';
+    if(pref.length) h += '<div class="mt8">'+sezTit("S\u00ec \u00b7 Preferiti")+pref.map(riga).join("")+'</div>';
     if(altri.length) h += '<div class="mt8">'+sezTit("Altri fornitori")+altri.map(riga).join("")+'</div>';
     if(st.nuovoFornitore===null){
       h += '<button class="btn-tratteggio mt8" onclick="A.apriNuovoFornitore()">'+ico("piu",16)+' Aggiungi fornitore</button>';
@@ -626,8 +743,9 @@ function vNuovo(){
   h += '<div class="chips">'
     +'<span class="chip">'+esc(struttura(st.draft.strutturaId)?.nome||"")+'</span>'
     +'<span class="chip">'+esc(reparto(st.draft.repartoId)?.nome||"")+'</span>'
-    +'<span class="chip forte">'+esc(fornitore(st.draft.fornitoreId)?.nome||"")+'</span></div>';
+    +'<span class="chip forte">'+(st.draft.fornitoreId ? esc(fornitore(st.draft.fornitoreId)?.nome||"") : 'Tutti i fornitori')+'</span></div>';
   h += picker();
+  h += '<button class="btn btn-dark mt8" style="width:100%" '+(st.draft.righe.length?'':'disabled ')+'onclick="A.creaOrdine()">'+ico("lista",16)+' Crea lista ordine \u00b7 '+st.draft.righe.length+'</button>';
   h += '<div class="spazio"></div>';
   h += '<div class="fascia-cta"><div><button class="btn-cta" '+(st.draft.righe.length?'':'disabled ')+'onclick="A.creaOrdine()">'
     +ico("lista",16)+' Crea lista ordine · '+st.draft.righe.length+'</button></div></div>';
@@ -692,6 +810,9 @@ function picker(){
   h += altriP.map(rendiRiga).join("");
   h += '</div>';
   if(righe.length) h += '<div class="pk-conteggio">'+righe.length+' prodotti nella lista</div>';
+  if(st.pickerCtx.tipo==="ordine"){
+    h += '<button class="btn btn-dark mt8" style="width:100%" onclick="A.chiudiAggiungiProdotti()">'+ico("check",16)+' Conferma \u00b7 torna alla lista</button>';
+  }
   return h;
 }
 
@@ -708,14 +829,41 @@ function vDettaglio(){
 
   h += '<div class="testa-ordine"><div class="to-top"><div class="to-sx">'
     +'<span class="mono xl">'+esc(mono(s?.nome))+'</span>'
-    +'<div style="min-width:0"><div class="to-nome">'+esc(s?.nome||"Struttura")+'</div>'
-    +'<div class="to-sub">'+esc(r?.nome||"")+' · fornitore <b>'+esc(f?.nome||"")+'</b></div>'
+    +'<div style="min-width:0"><div class="to-nome">'+esc(s?.nome||"Struttura eliminata")+'</div>'
+    +'<div class="to-sub">'+esc(r?.nome||"")+' · fornitore <b>'+esc(f?.nome||"Tutti i fornitori")+'</b></div>'
     +'<div class="to-meta">'+esc(o.numero)+' · creato '+fmtData(o.data)+' '+fmtOra(o.data)
-    +(o.confermatoAt?' · confermato '+fmtData(o.confermatoAt)+' '+fmtOra(o.confermatoAt):'')+'</div></div></div>'
-    +'<span class="pill '+(aperto?'pill-aperto':'pill-conf')+'">'+(aperto?'Aperto':'Confermato')+'</span></div>'
+    +(o.creatoDa?' · di '+esc(opNome(o.creatoDa)||'?'):'')+(o.confermatoAt?' · confermato '+fmtData(o.confermatoAt)+' '+fmtOra(o.confermatoAt)+(o.confermatoDa?' da '+esc(opNome(o.confermatoDa)||'?'):''):'')+'</div></div></div>'
+    +'<div style="display:flex;flex-direction:column;align-items:flex-end;gap:6px">'+'<span class="pill '+(aperto?'pill-aperto':'pill-conf')+'">'+(aperto?'Aperto':'Confermato')+'</span>'+(aperto?'<button class="btn-icona" title="Modifica struttura, reparto o fornitore" onclick="A.apriModificaOrdine()">'+ico("matita",15)+'</button>':'')+'<button class="btn-icona" title="Stampa ordine" onclick="A.stampaOrdine(\''+o.id+'\')">'+ico("stampa",15)+'</button>'+'</div></div>'
     +'<div class="prog-etic"><span>Prodotti ordinati</span><b>'+fatti+' / '+o.righe.length+'</b></div>'
     +metro(pct)+'</div>';
 
+  /* modifica di struttura / reparto / fornitore dell'ordine */
+  if(aperto && st.modificaOrdine){
+    const m = st.modificaOrdine;
+    const optStr = (st.config.strutture.some(s=>s.id===m.strutturaId)?'':'<option value="'+esc(m.strutturaId||"")+'" selected>(struttura eliminata)</option>')
+      + st.config.strutture.map(s=>'<option value="'+s.id+'"'+(m.strutturaId===s.id?' selected':'')+'>'+esc(s.nome)+'</option>').join("");
+    const optRep = (st.config.reparti.some(x=>x.id===m.repartoId)?'':'<option value="'+esc(m.repartoId||"")+'" selected>(reparto eliminato)</option>')
+      + st.config.reparti.map(x=>'<option value="'+x.id+'"'+(m.repartoId===x.id?' selected':'')+'>'+esc(x.nome)+'</option>').join("");
+    const optForn = '<option value=""'+(m.fornitoreId===""?' selected':'')+'>Tutti i fornitori</option>'
+      + st.config.fornitori.map(f=>'<option value="'+f.id+'"'+(m.fornitoreId===f.id?' selected':'')+'>'+esc(f.nome)+'</option>').join("");
+    h += '<div class="form-inline"><b style="font-size:11px;letter-spacing:.14em;text-transform:uppercase;display:block;margin-bottom:8px">Modifica ordine</b>'
+      +'<select onchange="A.setModOrd(\'strutturaId\', this.value)">'+optStr+'</select>'
+      +'<select onchange="A.setModOrd(\'repartoId\', this.value)">'+optRep+'</select>'
+      +'<select onchange="A.setModOrd(\'fornitoreId\', this.value)">'+optForn+'</select>'
+      +'<div class="righe-btn"><button class="btn btn-ghost" onclick="A.annullaModOrd()">Annulla</button>'
+      +'<button class="btn btn-dark" onclick="A.salvaModOrd(\''+o.id+'\')">Salva modifiche</button></div></div>';
+  }
+
+  if(o.controllo){
+    const c = o.controllo;
+    h += '<div class="card" style="padding:12px;margin-bottom:12px">'
+      +'<div class="eyebrow" style="margin-bottom:4px">Controllo consegna \u00b7 '+fmtData(c.data)+'</div>'
+      +((c.mancanti||[]).length || (c.extra||[]).length
+        ? ((c.mancanti||[]).length?'<div class="ctrl-tit var-su">Non consegnati</div>'+c.mancanti.map(r=>'<div class="storico-voce">'+esc(r.nome)+' \u2014 '+r.quantita+' '+esc(r.unita)+'</div>').join(""):'')
+          +((c.extra||[]).length?'<div class="ctrl-tit">In bolla ma non ordinati</div>'+c.extra.map(i=>'<div class="storico-voce">'+esc(i.nome)+(i.quantita!=null?' \u2014 '+i.quantita+(i.um?' '+esc(i.um):''):'')+'</div>').join(""):'')
+        : '<div style="font-size:12px;color:var(--verde);font-weight:600">Consegna conforme all\'ordine ('+c.conformi+' corrispondenze).</div>')
+      +'</div>';
+  }
   if(aperto) h += '<p class="suggerimento">Leggi i prodotti al rappresentante e tocca il cerchio quando l\'articolo è stato ordinato.</p>';
 
   o.righe.forEach(rg=>{
@@ -759,6 +907,15 @@ function vDettaglio(){
   } else {
     h += '<button class="btn-tratteggio mt12" onclick="A.riapriOrdine(\''+o.id+'\')">'+ico("riapri",14)+' Riapri ordine</button>';
   }
+
+  /* eliminazione dell'ordine (con conferma) */
+  if(!st.confermaEliminaOrd){
+    h += '<button class="btn-tratteggio mt8" style="border-color:var(--rosso);color:var(--rosso)" onclick="A.chiediEliminaOrdine()">'+ico("cestino",14)+' Elimina ordine</button>';
+  } else {
+    h += '<div class="avviso-conferma mt8" style="border-color:var(--rosso)"><p>Eliminare definitivamente l\'ordine '+esc(o.numero)+' dallo storico? L\'operazione non si pu\u00f2 annullare.</p>'
+      +'<div style="display:flex;gap:8px"><button class="btn btn-ghost" style="flex:1" onclick="A.annullaEliminaOrdine()">Annulla</button>'
+      +'<button class="btn btn-dark" style="flex:1;background:var(--rosso)" onclick="A.eliminaOrdine(\''+o.id+'\')">Elimina</button></div></div>';
+  }
   return h;
 }
 
@@ -767,10 +924,33 @@ function vCatalogo(){
   const t = norm(st.cercaCat);
   const prodotti = st.catalogo
     .filter(p=>(!st.catFiltro||p.categoria===st.catFiltro)&&(!t||norm(p.nome).includes(t)))
-    .sort((a,b)=>a.nome.localeCompare(b.nome));
+    .sort((a,b)=> st.ordCat==="prezzo"
+      ? (((a.ultimoPrezzo==null)-(b.ultimoPrezzo==null)) || (a.ultimoPrezzo-b.ultimoPrezzo) || a.nome.localeCompare(b.nome))
+      : a.nome.localeCompare(b.nome));
   const b = st.bolla;
 
-  let h = '<div class="card card-bolla"><h3>'+ico("doc",15)+' Carica bolla d\'acquisto</h3>'
+  let h = "";
+  /* preferiti: elencati in testa al catalogo generale, pronti da ordinare */
+  const prefProd = st.catalogo.filter(p=>p.preferito).sort((a,b)=>a.nome.localeCompare(b.nome));
+  if(prefProd.length){
+    const nSel = prefProd.filter(p=>st.selPref[p.id]).length;
+    h += '<section class="mb12">'+sezTit("Preferiti · pronti da ordinare")+'<div class="pref-lista">';
+    prefProd.forEach(p=>{
+      const on = !!st.selPref[p.id];
+      h += '<div class="pref-riga'+(on?' on':'')+'">'
+        +'<button class="pk-box'+(on?' on':'')+'" onclick="A.toggleSelPref(\''+p.id+'\')">'+(on?ico("check",14):'')+'</button>'
+        +'<button class="testo" onclick="A.toggleSelPref(\''+p.id+'\')"><span class="pk-nome">'+esc(p.nome)+'</span>'+infoProdotto(p)+'</button>'
+        +'<button class="stellina" title="Togli dai preferiti" onclick="A.togglePrefProd(\''+p.id+'\')">'+stella(true,15)+'</button>'
+        +'</div>';
+    });
+    h += '</div>';
+    h += nSel
+      ? '<button class="btn-cta mt8" onclick="A.ordinaPreferiti()">'+ico("lista",16)+' Crea ordine · '+nSel+' prodotti</button>'
+      : '<p class="suggerimento mt8">Spunta i prodotti e crea l\'ordine in un tocco: struttura, reparto e fornitore li scegli subito dopo.</p>';
+    h += '</section>';
+  }
+
+  h += '<div class="card card-bolla"><h3>'+ico("doc",15)+' Carica bolla d\'acquisto</h3>'
     +'<p class="desc">Trascina il PDF della bolla nella zona qui sotto (o toccala per scegliere un file): i prodotti vengono letti in automatico e aggiunti al catalogo, così restano memorizzati per gli ordini futuri.</p>';
   if(b.errore) h += '<div class="err-box">'+esc(b.errore)
     +(b.dettaglio?'<div class="err-det">Dettaglio tecnico: '+esc(b.dettaglio)+'</div>':'')
@@ -786,21 +966,84 @@ function vCatalogo(){
       +'</div>';
   } else if(b.fase==="caricamento"){
     h += '<div class="caricamento"><span class="spin">'+ico("giro",16)+'</span> Lettura della bolla in corso…</div>';
+  } else if(b.fase==="esito"){
+    h += '<div class="avviso-conferma"><p><b>'+b.aggiunti+'</b> prodotti nuovi aggiunti \u00b7 <b>'+b.aggiornati+'</b> prezzi registrati.</p>';
+    if((b.variazioni||[]).length){
+      h += '<div style="font-size:10px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;margin:6px 0">Variazioni di prezzo rilevate</div>';
+      b.variazioni.forEach(v=>{
+        const su = v.a>v.da;
+        h += '<div class="storico-voce">'+esc(v.nome)+': '+fmtEuro(v.da)+' \u2192 <b class="'+(su?'var-su':'var-giu')+'">'+fmtEuro(v.a)+' '+(su?'\u25b2':'\u25bc')+' '+pctVar(v.da,v.a)+'</b></div>';
+      });
+    } else {
+      h += '<p style="font-size:12px;color:var(--grigio)">Nessuna variazione di prezzo rispetto ai valori registrati.</p>';
+    }
+    h += '<button class="btn btn-dark mt8" onclick="A.chiudiEsitoBolla()">OK</button></div>';
   } else {
-    h += '<div style="font-size:10px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;margin-bottom:8px">Prodotti trovati — seleziona quelli da salvare</div><div class="bolla-lista">';
+    const nNuovi = b.items.filter(i=>i.selezionato&&!i.esiste).length;
+    const nPrezzi = b.items.filter(i=>i.selezionato&&i.esiste).length;
+    h += '<div style="font-size:10px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;margin-bottom:8px">Prodotti trovati — spunta i nuovi da aggiungere e i prezzi da registrare</div><div class="bolla-lista">';
     b.items.forEach((i,idx)=>{
-      h += '<div class="bolla-item'+(i.esiste?' esiste':'')+'">'
-        +'<button class="bolla-check'+(i.selezionato?' on':'')+'" '+(i.esiste?'disabled ':'')+'onclick="A.toggleBolla('+idx+')">'+(i.selezionato?ico("check",14):'')+'</button>'
+      h += '<div class="bolla-item'+(i.esiste && !i.selezionato?' esiste':'')+'">'
+        +'<div class="bi-riga1">'
+        +'<button class="bolla-check'+(i.selezionato?' on':'')+'" onclick="A.toggleBolla('+idx+')">'+(i.selezionato?ico("check",14):'')+'</button>'
         +'<input data-fid="bi-'+idx+'" value="'+esc(i.nome)+'" oninput="A.nomeBolla('+idx+', this.value)">'
+        +'<input class="bi-prezzo" data-fid="bip-'+idx+'" inputmode="decimal" placeholder="\u20ac" value="'+(i.prezzo!=null?String(i.prezzo).replace(".",","):"")+'" oninput="A.prezzoBolla('+idx+', this.value)" onchange="A.rinfrescaBolla()">'
+        +'</div><div class="bi-riga2">'
+        +(i.quantita!=null?'<span class="gia">'+i.quantita+(i.um?' '+esc(i.um):'')+'</span>':'')
         +(i.esiste
-          ? '<span class="gia">già nel catalogo</span>'
+          ? '<span class="gia">gi\u00e0 nel catalogo</span>'
+            +(i.variato
+              ? '<b class="'+(i.prezzo>i.prezzoPrec?'var-su':'var-giu')+'">'+(i.prezzo>i.prezzoPrec?'\u25b2':'\u25bc')+' era '+fmtEuro(i.prezzoPrec)+' ('+pctVar(i.prezzoPrec,i.prezzo)+')</b>'
+              : (i.prezzo!=null && i.prezzoPrec==null
+                  ? '<span class="gia">nuovo prezzo da registrare</span>'
+                  : (i.prezzoPrec!=null ? '<span class="gia">prezzo invariato</span>' : '')))
           : '<select onchange="A.catBolla('+idx+', this.value)">'+CATEGORIE.map(c=>'<option'+(i.categoria===c?' selected':'')+'>'+c+'</option>').join("")+'</select>')
-        +'</div>';
+        +'</div></div>';
     });
-    h += '</div><select class="bolla-forn" onchange="A.fornBolla(this.value)"><option value="">Fornitore della bolla (facoltativo)</option>'
+    h += '</div>';
+    /* controllo consegna: confronto con un ordine */
+    const ordiniSel = st.ordini.slice().sort((a,b)=>new Date(b.data)-new Date(a.data)).slice(0,20);
+    if(ordiniSel.length){
+      h += '<select class="bolla-forn" onchange="A.confrontaBolla(this.value)"><option value="">Controllo consegna: confronta con un ordine\u2026</option>'
+        + ordiniSel.map(o=>{ const s=struttura(o.strutturaId), f=fornitore(o.fornitoreId);
+            return '<option value="'+o.id+'"'+(st.bolla.confrontoOrdineId===o.id?' selected':'')+'>'+esc(o.numero)+' \u00b7 '+fmtData(o.data)+' \u00b7 '+esc(s?.nome||"")+' \u00b7 '+esc(f?.nome||"Tutti")+'</option>'; }).join("")
+        +'</select>';
+    }
+    if(st.bolla.confronto){
+      const c = st.bolla.confronto;
+      h += '<div class="avviso-conferma mb8">'
+        +'<p style="margin-bottom:6px"><b>Controllo consegna</b> \u2014 corrispondenze: '+c.ok.length+' \u00b7 mancanti: '+c.mancanti.length+' \u00b7 non ordinati: '+c.extra.length+'</p>';
+      if(c.mancanti.length){
+        h += '<div class="ctrl-tit var-su">Ordinati ma NON in bolla</div>';
+        c.mancanti.forEach(r=>{ h += '<div class="storico-voce">'+esc(r.nome)+' \u2014 '+r.quantita+' '+esc(r.unita)+'</div>'; });
+      }
+      if(c.extra.length){
+        h += '<div class="ctrl-tit">In bolla ma NON ordinati</div>';
+        c.extra.forEach(i=>{ h += '<div class="storico-voce">'+esc(i.nome)+(i.quantita!=null?' \u2014 '+i.quantita+(i.um?' '+esc(i.um):''):'')+'</div>'; });
+      }
+      if(c.ok.length){
+        h += '<details><summary>Corrispondenze \u00b7 '+c.ok.length+'</summary>';
+        c.ok.forEach(x=>{
+          const diff = x.item.quantita!=null && x.riga.quantita!=null && Number(x.item.quantita)!==Number(x.riga.quantita);
+          h += '<div class="storico-voce">'+esc(x.riga.nome)+' \u2014 ordinato '+x.riga.quantita+' '+esc(x.riga.unita)
+            +' \u00b7 in bolla '+(x.item.quantita!=null ? x.item.quantita+(x.item.um?' '+esc(x.item.um):'') : 'n.d.')
+            +(diff?' <b class="var-su">verifica quantit\u00e0</b>':'')+'</div>';
+        });
+        h += '</details>';
+      }
+      if(!c.mancanti.length && !c.extra.length){
+        h += '<p style="font-size:12px;color:var(--verde);font-weight:600">Consegna conforme all\'ordine.</p>';
+      }
+      h += (st.bolla.controlloRegistrato
+        ? '<p style="font-size:11px;color:var(--grigio);margin-top:6px">Esito registrato sull\'ordine.</p>'
+        : '<button class="btn btn-ghost mt8" onclick="A.registraControllo()">Registra esito sull\'ordine</button>');
+      h += '</div>';
+    }
+    h += '<select class="bolla-forn" onchange="A.fornBolla(this.value)"><option value="">Fornitore della bolla (facoltativo)</option>'
+      +(b.fornitoreNuovo ? '<option value="__nuovo__"'+(b.fornitoreId==="__nuovo__"?' selected':'')+'>Nuovo fornitore: '+esc(b.fornitoreNuovo)+' (letto dalla bolla)</option>' : '')
       +st.config.fornitori.map(f=>'<option value="'+f.id+'"'+(b.fornitoreId===f.id?' selected':'')+'>'+esc(f.nome)+'</option>').join("")+'</select>'
       +'<div style="display:flex;gap:8px"><button class="btn btn-ghost" style="flex:1" onclick="A.annullaBolla()">Annulla</button>'
-      +'<button class="btn btn-dark" style="flex:1" onclick="A.salvaBolla()">Salva '+b.items.filter(i=>i.selezionato&&!i.esiste).length+' prodotti</button></div>';
+      +'<button class="btn btn-dark" style="flex:1" onclick="A.salvaBolla()">Salva ('+nNuovi+' nuovi \u00b7 '+nPrezzi+' prezzi)</button></div>';
   }
   h += '</div>';
 
@@ -817,6 +1060,10 @@ function vCatalogo(){
 
   h += '<div class="cerca">'+ico("cerca",15)
     +'<input data-fid="cat-cerca" value="'+esc(st.cercaCat)+'" placeholder="Cerca nel catalogo…" oninput="A.setCercaCat(this.value)"></div>';
+  h += '<div style="display:flex;gap:6px;margin-bottom:8px">'
+    +'<button class="btn-mini'+(st.ordCat!=="prezzo"?' on':'')+'" onclick="A.setOrdCat(\'nome\')">A\u2013Z</button>'
+    +'<button class="btn-mini'+(st.ordCat==="prezzo"?' on':'')+'" onclick="A.setOrdCat(\'prezzo\')">Prezzo crescente</button>'
+    +'</div>';
   h += '<div class="cat-chips"><button class="'+(!st.catFiltro?'on':'')+'" onclick="A.setCatFiltro(\'\')">Tutte</button>'
     +CATEGORIE.map(c=>'<button class="'+(st.catFiltro===c?'on':'')+'" onclick="A.setCatFiltro(\''+c+'\')">'+c+'</button>').join("")+'</div>';
 
@@ -827,6 +1074,15 @@ function vCatalogo(){
       +'<div class="prod-cat">'+esc(p.categoria)+(p.origine==="bolla"?' · da bolla':'')+'</div>'
       +infoProdotto(p)
       +(st.editProd===p.id ? '<input class="input-nota" data-fid="ep-'+p.id+'" placeholder="Nota fissa del prodotto (es. solo formato 24 pz)…" value="'+esc(p.note)+'" oninput="A.notaProdotto(\''+p.id+'\', this.value)" onblur="A.chiudiEditProd()">' : '')
+      +((p.prezzi||[]).length ? '<details><summary>Storico prezzi \u00b7 '+p.prezzi.length+'</summary>'
+        +p.prezzi.map(function(v,ix,arr){
+          const prec = arr[ix+1]; let extra = "";
+          if(prec && Math.abs(v.prezzo-prec.prezzo)>0.004){
+            const su = v.prezzo>prec.prezzo;
+            extra = ' <b class="'+(su?'var-su':'var-giu')+'">'+(su?'\u25b2':'\u25bc')+' '+pctVar(prec.prezzo,v.prezzo)+'</b>';
+          }
+          return '<div class="storico-voce">'+fmtData(v.data)+' \u00b7 '+fmtEuro(v.prezzo)+' \u00b7 '+esc(fornitore(v.fornitoreId)?.nome||"")+extra+'</div>';
+        }).join("")+'</details>' : '')
       +((p.storico||[]).length ? '<details><summary>'+ico("storia",10)+' Ultimi ordini · '+p.storico.length+'</summary>'
         +p.storico.map(v=>'<div class="storico-voce">'+fmtData(v.data)+' · '+esc(struttura(v.strutturaId)?.nome||"")+' · '+esc(reparto(v.repartoId)?.nome||"")+' · '+esc(fornitore(v.fornitoreId)?.nome||"")+' · '+v.quantita+' '+esc(v.unita)+'</div>').join("")
         +'</details>' : '')
@@ -836,7 +1092,220 @@ function vCatalogo(){
       +'<button title="Elimina" onclick="A.eliminaProdotto(\''+p.id+'\')">'+ico("cestino",14)+'</button>'
       +'</div></div></div>';
   });
+
+  /* --- zona pericolosa: svuotamento del catalogo con doppia conferma --- */
+  h += '<div class="mt12">'+sezTit("Zona pericolosa");
+  if(st.svuotaCat===0){
+    h += '<button class="btn-tratteggio" style="border-color:var(--rosso);color:var(--rosso)" onclick="A.svuotaCatStep(1)">'+ico("cestino",14)+' Svuota tutto il catalogo</button>';
+  } else if(st.svuotaCat===1){
+    h += '<div class="avviso-conferma" style="border-color:var(--rosso)">'
+      +'<p><b>Conferma 1 di 2.</b> Stai per eliminare tutti i <b>'+st.catalogo.length+'</b> prodotti del catalogo, con note, preferiti e storico prezzi. Gli ordini nello storico restano leggibili. Continuare?</p>'
+      +'<div style="display:flex;gap:8px"><button class="btn btn-ghost" style="flex:1" onclick="A.svuotaCatStep(0)">Annulla</button>'
+      +'<button class="btn btn-dark" style="flex:1;background:var(--rosso)" onclick="A.svuotaCatStep(2)">Continua</button></div></div>';
+  } else {
+    h += '<div class="avviso-conferma" style="border-color:var(--rosso)">'
+      +'<p><b>Conferma 2 di 2 \u2014 irreversibile.</b> Per procedere scrivi <b>ELIMINA</b> nel campo qui sotto.</p>'
+      +'<input data-fid="svuota-txt" style="width:100%;padding:10px 12px;border:1px solid var(--rosso);border-radius:8px;margin:6px 0" placeholder="Scrivi ELIMINA" value="'+esc(st.svuotaTxt)+'" oninput="A.setSvuotaTxt(this.value)">'
+      +(st.svuotaErr?'<div class="err-box">Testo non corretto: scrivi esattamente ELIMINA.</div>':'')
+      +'<div style="display:flex;gap:8px"><button class="btn btn-ghost" style="flex:1" onclick="A.svuotaCatStep(0)">Annulla</button>'
+      +'<button class="btn btn-dark" style="flex:1;background:var(--rosso)" onclick="A.svuotaCatalogo()">Elimina definitivamente</button></div></div>';
+  }
+  h += '</div>';
   return h;
+}
+
+/* ---------- Impostazioni · anagrafica strutture ---------- */
+function vImpostazioni(){
+  let h = '<button class="indietro-link" onclick="A.vai(\'ordini\')">'+ico("frecciaS",14)+' Ordini</button>';
+  h += '<div class="step-testa"><div><div class="eyebrow">Impostazioni</div><h2>Anagrafica strutture</h2></div></div>';
+  h += '<p class="suggerimento">Le strutture ed esercizi per cui fai gli ordini: aggiungile, rinominale o eliminale. Il monogramma si genera da solo dal nome.</p>';
+
+  if(st.nuovaStrutturaImp===null){
+    h += '<button class="btn-tratteggio mb8" onclick="A.impNuovaApri()">'+ico("piu",16)+' Aggiungi struttura / esercizio</button>';
+  } else {
+    h += '<div class="form-inline">'
+      +'<input data-fid="imp-nuova" placeholder="Nome struttura (es. Chalet Pieve)" value="'+esc(st.nuovaStrutturaImp.nome)+'" oninput="A.impNuovaSet(this.value)">'
+      +'<div class="righe-btn"><button class="btn btn-ghost" onclick="A.chiudiForm(\'nuovaStrutturaImp\')">Annulla</button>'
+      +'<button class="btn btn-dark" onclick="A.impNuovaSalva()">Salva</button></div></div>';
+  }
+
+  if(!st.config.strutture.length){
+    h += '<div class="vuoto">Nessuna struttura ancora inserita.</div>';
+  }
+  st.config.strutture.forEach(s=>{
+    const nOrd = st.ordini.filter(o=>o.strutturaId===s.id).length;
+    if(st.editStruttura===s.id){
+      h += '<div class="form-inline">'
+        +'<input data-fid="imp-nome-'+s.id+'" value="'+esc(st.editStrutturaNome)+'" oninput="A.impRinominaSet(this.value)">'
+        +'<div class="righe-btn"><button class="btn btn-ghost" onclick="A.impRinominaAnnulla()">Annulla</button>'
+        +'<button class="btn btn-dark" onclick="A.impRinominaSalva()">Salva nome</button></div></div>';
+      return;
+    }
+    h += '<div class="imp-riga">'
+      +'<span class="mono">'+esc(mono(s.nome))+'</span>'
+      +'<div style="flex:1;min-width:0"><div class="imp-nome">'+esc(s.nome)+'</div>'
+      +'<div class="imp-sub">'+(nOrd ? nOrd+' ordini nello storico' : 'nessun ordine')+'</div></div>'
+      +'<div class="mini-azioni">'
+      +'<button title="Rinomina" onclick="A.impRinominaApri(\''+s.id+'\')">'+ico("matita",15)+'</button>'
+      +'<button title="Elimina" onclick="A.impEliminaChiedi(\''+s.id+'\')">'+ico("cestino",15)+'</button>'
+      +'</div></div>';
+    if(st.confermaElimina===s.id){
+      h += '<div class="avviso-conferma mb8"><p>'
+        +(nOrd
+          ? 'Questa struttura compare in '+nOrd+' ordini dello storico: eliminandola, quegli ordini resteranno ma senza il nome della struttura. Eliminare comunque?'
+          : 'Eliminare la struttura &laquo;'+esc(s.nome)+'&raquo;?')
+        +'</p><div style="display:flex;gap:8px">'
+        +'<button class="btn btn-ghost" style="flex:1" onclick="A.impEliminaAnnulla()">Annulla</button>'
+        +'<button class="btn btn-dark" style="flex:1" onclick="A.impElimina(\''+s.id+'\')">Elimina</button></div></div>';
+    }
+  });
+
+  /* --- operatori e PIN --- */
+  h += '<div class="mt12">'+sezTit("Operatori e PIN")+'</div>';
+  h += '<p class="suggerimento">Chi elabora gli ordini si registra qui con nome e PIN. Con almeno un operatore attivo, all\'apertura l\'app chiede il PIN e ogni ordine registra chi lo ha creato e confermato.</p>';
+  if(st.nuovoOperatore===null){
+    h += '<button class="btn-tratteggio mb8" onclick="A.impOpApri()">'+ico("piu",16)+' Aggiungi operatore</button>';
+  } else {
+    h += '<div class="form-inline">'
+      +'<input data-fid="op-nome" placeholder="Nome operatore (es. Alex)" value="'+esc(st.nuovoOperatore.nome)+'" oninput="A.impOpSet(\'nome\', this.value)">'
+      +'<input data-fid="op-pin" placeholder="PIN (4-6 cifre)" inputmode="numeric" value="'+esc(st.nuovoOperatore.pin)+'" oninput="A.impOpSet(\'pin\', this.value)">'
+      +(st.nuovoOperatore.errore?'<div class="err-box">'+esc(st.nuovoOperatore.errore)+'</div>':'')
+      +'<div class="righe-btn"><button class="btn btn-ghost" onclick="A.chiudiForm(\'nuovoOperatore\')">Annulla</button>'
+      +'<button class="btn btn-dark" onclick="A.impOpSalva()">Salva</button></div></div>';
+  }
+  (st.config.operatori||[]).forEach(op=>{
+    h += '<div class="imp-riga">'
+      +'<span class="mono">'+esc(mono(op.nome))+'</span>'
+      +'<div style="flex:1;min-width:0"><div class="imp-nome">'+esc(op.nome)+'</div>'
+      +'<div class="imp-sub">PIN \u00b7\u00b7\u00b7\u00b7</div></div>'
+      +'<div class="mini-azioni"><button title="Elimina" onclick="A.impOpChiedi(\''+op.id+'\')">'+ico("cestino",15)+'</button></div>'
+      +'</div>';
+    if(st.confermaEliminaOp===op.id){
+      h += '<div class="avviso-conferma mb8"><p>Eliminare l\'operatore &laquo;'+esc(op.nome)+'&raquo;? Gli ordini gi\u00e0 registrati a suo nome restano invariati.</p>'
+        +'<div style="display:flex;gap:8px"><button class="btn btn-ghost" style="flex:1" onclick="A.impOpAnnulla()">Annulla</button>'
+        +'<button class="btn btn-dark" style="flex:1" onclick="A.impOpElimina(\''+op.id+'\')">Elimina</button></div></div>';
+    }
+  });
+  return h;
+}
+
+/* ---------- Blocco PIN e Statistiche ---------- */
+function vBlocco(){
+  const ops = st.config.operatori||[];
+  return '<header class="topbar"><div class="topbar-in"><div class="marchio-riga"><div class="marchio"><small>Alpstay / Gestione forniture</small><b>Ordini giornalieri</b></div></div></div></header>'
+    +'<main><div class="card" style="padding:20px;margin-top:16px;text-align:center">'
+    +'<div class="eyebrow" style="margin-bottom:4px">Accesso operatore</div>'
+    +'<h2 style="font-size:22px;margin-bottom:12px">Inserisci il PIN</h2>'
+    +'<div style="display:flex;flex-wrap:wrap;gap:6px;justify-content:center;margin-bottom:14px">'
+    +ops.map(o=>'<span class="chip">'+esc(o.nome)+'</span>').join("")
+    +'</div>'
+    +'<input class="pin-input" data-fid="pin" type="password" inputmode="numeric" autocomplete="off" placeholder="\u00b7\u00b7\u00b7\u00b7" value="'+esc(st.pinInput)+'" oninput="A.setPin(this.value)">'
+    +'<div id="pin-err" class="err-box" style="display:none;margin-top:10px">PIN non riconosciuto: riprova.</div>'
+    +'<p class="suggerimento" style="margin-top:12px">Il PIN identifica chi elabora l\'ordine. Gli operatori si gestiscono da Impostazioni.</p>'
+    +'</div><footer class="piepagina">&copy; MP-ALPSTAY 08/2026</footer></main>';
+}
+
+function vStatistiche(){
+  const per = st.statPeriodo;
+  const da = per==="tutto" ? null : new Date(Date.now() - Number(per)*86400000);
+  const oo = st.ordini.filter(o=>!da || new Date(o.data) >= da);
+  const conf = oo.filter(o=>o.stato==="confermato").length;
+  let righeOrd = 0; oo.forEach(o=>{ righeOrd += o.righe.filter(r=>r.ordinato).length; });
+
+  const conta = (fn) => {
+    const m = new Map();
+    oo.forEach(o=>{ const k = fn(o); m.set(k, (m.get(k)||0)+1); });
+    return [...m.entries()].sort((a,b)=>b[1]-a[1]);
+  };
+  const perStruttura = conta(o=>struttura(o.strutturaId)?.nome||"\u2014");
+  const perFornitore = conta(o=>fornitore(o.fornitoreId)?.nome||"Tutti i fornitori");
+  const perReparto = conta(o=>reparto(o.repartoId)?.nome||"\u2014");
+  const conOperatori = (st.config.operatori||[]).length || st.ordini.some(o=>o.creatoDa);
+  const perOperatore = conOperatori ? conta(o=>opNome(o.creatoDa)||"Senza operatore") : [];
+
+  const mp = new Map();
+  oo.forEach(o=>o.righe.forEach(r=>{ if(!r.ordinato) return; mp.set(r.nome, (mp.get(r.nome)||0) + (Number(r.quantita)||1)); }));
+  const topProdotti = [...mp.entries()].sort((a,b)=>b[1]-a[1]);
+
+  const movimenti = st.catalogo
+    .filter(p=>(p.prezzi||[]).length>=2)
+    .map(p=>({ nome:p.nome, da:p.prezzi[1].prezzo, a:p.prezzi[0].prezzo }))
+    .filter(x=>Math.abs(x.a-x.da)>0.004)
+    .sort((x,y)=>Math.abs((y.a-y.da)/y.da) - Math.abs((x.a-x.da)/x.da))
+    .slice(0,8);
+
+  const barre = (titolo, coppie) => {
+    if(!coppie.length) return "";
+    const mx = coppie[0][1] || 1;
+    let x = '<div class="card" style="padding:12px;margin-bottom:12px">'+sezTit(titolo);
+    coppie.slice(0,8).forEach(cp=>{
+      x += '<div class="stat-riga"><div class="stat-etic"><span>'+esc(cp[0])+'</span><b>'+cp[1]+'</b></div>'
+        +'<div class="stat-traccia"><i style="width:'+Math.round(cp[1]/mx*100)+'%"></i></div></div>';
+    });
+    return x+'</div>';
+  };
+
+  let h = '<button class="indietro-link" onclick="A.vai(\'ordini\')">'+ico("frecciaS",14)+' Ordini</button>';
+  h += '<div class="step-testa"><div><div class="eyebrow">Analisi</div><h2>Statistiche</h2></div></div>';
+  h += '<div style="display:flex;gap:6px;margin-bottom:12px;flex-wrap:wrap">'
+    +[["30","30 giorni"],["90","90 giorni"],["365","12 mesi"],["tutto","Tutto"]].map(c=>'<button class="btn-mini'+(per===c[0]?' on':'')+'" onclick="A.setStatPeriodo(\''+c[0]+'\')">'+c[1]+'</button>').join("")+'</div>';
+  h += '<div class="kpi">'
+    +'<div class="card"><b>'+oo.length+'</b><span>Ordini</span></div>'
+    +'<div class="card"><b>'+conf+'</b><span>Confermati</span></div>'
+    +'<div class="card"><b>'+righeOrd+'</b><span>Righe ordinate</span></div>'
+    +'<div class="card"><b>'+st.catalogo.length+'</b><span>Prodotti a catalogo</span></div>'
+    +'</div>';
+  if(!oo.length) h += '<div class="vuoto mb12">Nessun ordine nel periodo scelto.</div>';
+  h += barre("Ordini per struttura", perStruttura);
+  h += barre("Ordini per fornitore", perFornitore);
+  h += barre("Ordini per reparto", perReparto);
+  if(perOperatore.length) h += barre("Ordini per operatore", perOperatore);
+  h += barre("Prodotti pi\u00f9 ordinati (quantit\u00e0)", topProdotti);
+  if(movimenti.length){
+    let x = '<div class="card" style="padding:12px;margin-bottom:12px">'+sezTit("Ultime variazioni di prezzo");
+    movimenti.forEach(v=>{
+      const su = v.a>v.da;
+      x += '<div class="storico-voce">'+esc(v.nome)+': '+fmtEuro(v.da)+' \u2192 <b class="'+(su?'var-su':'var-giu')+'">'+fmtEuro(v.a)+' '+(su?'\u25b2':'\u25bc')+' '+pctVar(v.da,v.a)+'</b></div>';
+    });
+    h += x+'</div>';
+  }
+  return h;
+}
+
+/* ---------- Stampa ordine ---------- */
+function stampaHTML(o){
+  const s = struttura(o.strutturaId), r = reparto(o.repartoId), f = fornitore(o.fornitoreId);
+  const righeTab = o.righe.map(rg=>{
+    const p = st.catalogo.find(x=>x.id===rg.prodottoId);
+    const prezzo = (p && p.ultimoPrezzo!=null) ? fmtEuro(p.ultimoPrezzo) : "\u2014";
+    return '<tr><td>'+esc(rg.nome)+'</td><td>'+rg.quantita+'</td><td>'+esc(rg.unita)+'</td><td>'+prezzo+'</td><td>'+esc(rg.nota||"")+'</td>'
+      +'<td>'+(rg.ordinato ? '\u2713 '+fmtOra(rg.ordinatoAt) : '\u2014')+'</td></tr>';
+  }).join("");
+  let ctrl = "";
+  if(o.controllo){
+    const c = o.controllo;
+    ctrl = '<div class="st-ctrl"><b>Controllo consegna del '+fmtData(c.data)+':</b> '
+      +((c.mancanti||[]).length || (c.extra||[]).length
+        ? ((c.mancanti||[]).length ? 'non consegnati: '+c.mancanti.map(x=>esc(x.nome)).join(", ")+'. ' : '')
+          +((c.extra||[]).length ? 'In bolla ma non ordinati: '+c.extra.map(x=>esc(x.nome)).join(", ")+'.' : '')
+        : 'consegna conforme all\'ordine ('+c.conformi+' corrispondenze).')
+      +'</div>';
+  }
+  return '<div class="st-doc">'
+    +'<div class="st-testa"><div><div class="st-eyebrow">Alpstay / Gestione forniture</div>'
+    +'<div class="st-titolo">Ordine '+esc(o.numero)+'</div></div>'
+    +'<div class="st-meta">Creato il '+fmtData(o.data)+' '+fmtOra(o.data)
+    +(o.confermatoAt?'<br>Confermato il '+fmtData(o.confermatoAt)+' '+fmtOra(o.confermatoAt):'')+'</div></div>'
+    +'<table class="st-info"><tr><td>Struttura</td><td>'+esc(s?.nome||"Struttura eliminata")+'</td><td>Reparto</td><td>'+esc(r?.nome||"\u2014")+'</td></tr>'
+    +'<tr><td>Fornitore</td><td>'+esc(f?.nome||"Tutti i fornitori")+'</td><td>Stato</td><td>'+(o.stato==="aperto"?"Aperto":"Confermato")+'</td></tr>'
+    +((o.creatoDa||o.confermatoDa)?'<tr><td>Elaborato da</td><td>'+esc(opNome(o.creatoDa)||"\u2014")+'</td><td>Confermato da</td><td>'+esc(opNome(o.confermatoDa)||"\u2014")+'</td></tr>':'')
+    +'</table>'
+    +'<table class="st-tab"><thead><tr><th>Prodotto</th><th>Q.t\u00e0</th><th>UM</th><th>Ultimo prezzo</th><th>Nota</th><th>Ordinato</th></tr></thead><tbody>'+righeTab+'</tbody></table>'
+    +'<div class="st-tot">'+o.righe.length+' righe \u00b7 '+o.righe.filter(x=>x.ordinato).length+' ordinate</div>'
+    +ctrl
+    +'<div class="st-firma"><span>Firma operatore</span><span>Firma fornitore / rappresentante</span></div>'
+    +'<div class="st-pie">&copy; MP-ALPSTAY 08/2026</div>'
+    +'</div>';
 }
 
 /* ---------- Layout ---------- */
@@ -846,6 +1315,13 @@ function render(){
     app.innerHTML = '<div class="schermo-carico"><span class="spin">'+ico("giro",18)+'</span> Carico gli ordini</div>';
     return;
   }
+  /* blocco operatore: con PIN configurati serve l'accesso */
+  if(st.config && (st.config.operatori||[]).length && !st.operatoreId){
+    app.innerHTML = vBlocco();
+    const elPin = document.querySelector('[data-fid="pin"]'); if(elPin) elPin.focus();
+    return;
+  }
+
   /* salvo il focus */
   const attivo = document.activeElement;
   const fid = attivo && attivo.dataset ? attivo.dataset.fid : null;
@@ -856,6 +1332,8 @@ function render(){
   else if(st.vista.name==="nuovo") corpo = vNuovo();
   else if(st.vista.name==="dettaglio") corpo = vDettaglio();
   else if(st.vista.name==="catalogo") corpo = vCatalogo();
+  else if(st.vista.name==="impostazioni") corpo = vImpostazioni();
+  else if(st.vista.name==="statistiche") corpo = vStatistiche();
 
   const tab = (nome, icona, etichetta, fab) => {
     const on = st.vista.name===nome || (nome==="ordini" && st.vista.name==="dettaglio");
@@ -866,10 +1344,14 @@ function render(){
   app.innerHTML =
     '<header class="topbar"><div class="topbar-in">'
     +'<div class="marchio-riga"><div class="marchio"><small>Alpstay / Gestione forniture</small><b>Ordini giornalieri</b></div>'
+    +'<div style="display:flex;align-items:center;gap:6px">'
     +(st.erroreSalvataggio
       ? '<span class="badge-err">Salvataggio non riuscito</span>'
       : '<span class="salvato'+(st.ultimoSalvataggio?'':' hidden')+'" id="salvato-ind">'+(st.ultimoSalvataggio?'<i></i>Salvato alle '+st.ultimoSalvataggio:'')+'</span>')
-    +'</div></div></header>'
+    +(st.operatoreId?'<button class="btn-icona" title="Operatore: '+esc(opNome(st.operatoreId))+' (tocca per cambiare)" onclick="A.esciOperatore()"><span class="mono sm">'+esc(mono(opNome(st.operatoreId)))+'</span></button>':'')
+    +'<button class="btn-icona" title="Statistiche" onclick="A.vai(\'statistiche\')">'+ico("grafico",18)+'</button>'
+    +'<button class="btn-icona" title="Impostazioni" onclick="A.vai(\'impostazioni\')">'+ico("ingranaggio",18)+'</button>'
+    +'</div></div></div></header>'
     +'<main>'+corpo
     +'<footer class="piepagina">&copy; MP-ALPSTAY 08/2026</footer>'
     +'</main>'
@@ -898,9 +1380,11 @@ const A = {
   /* navigazione */
   vai(nome){
     if(nome==="nuovo"){ st.step=0; st.draft={strutturaId:"",repartoId:"",fornitoreId:"",righe:[]}; st.nuovaStruttura=null; st.nuovoReparto=null; st.nuovoFornitore=null; st.rapido=null; st.cercaPicker=""; }
+    if(nome==="impostazioni"){ st.editStruttura=null; st.editStrutturaNome=""; st.nuovaStrutturaImp=null; st.confermaElimina=null; }
+    st.svuotaCat=0; st.svuotaTxt=""; st.svuotaErr=false;
     st.vista={name:nome}; render();
   },
-  apriDettaglio(id){ st.vista={name:"dettaglio",ordineId:id}; st.confermaVisibile=false; st.aggiungiProdotti=false; st.notaAperta=null; render(); },
+  apriDettaglio(id){ st.vista={name:"dettaglio",ordineId:id}; st.confermaVisibile=false; st.aggiungiProdotti=false; st.notaAperta=null; st.confermaEliminaOrd=false; st.modificaOrdine=null; render(); },
   tornaOrdini(){ st.vista={name:"ordini"}; st.confermaVisibile=false; st.aggiungiProdotti=false; render(); },
   stepIndietro(){ st.step=Math.max(0,st.step-1); render(); },
   chiudiForm(nome){ st[nome]=null; render(); },
@@ -997,10 +1481,11 @@ const A = {
 
   /* creazione ordine */
   creaOrdine(){
+    if(!st.draft.righe.length) return;
     const numero = "ORD-"+String(st.ordini.length+1).padStart(4,"0");
     const o = { id:uid("o"), numero, data:new Date().toISOString(),
       strutturaId:st.draft.strutturaId, repartoId:st.draft.repartoId, fornitoreId:st.draft.fornitoreId,
-      stato:"aperto", righe:st.draft.righe, confermatoAt:null };
+      stato:"aperto", righe:st.draft.righe, confermatoAt:null, creatoDa:st.operatoreId||null };
     st.ordini.unshift(o); salvaOrdini();
     st.step=0; st.draft={strutturaId:"",repartoId:"",fornitoreId:"",righe:[]}; st.cercaPicker="";
     st.vista={name:"dettaglio",ordineId:o.id}; render();
@@ -1033,7 +1518,7 @@ const A = {
     const o = st.ordini.find(x=>x.id===oid);
     if(!o) return;
     const adesso = new Date().toISOString();
-    st.ordini = st.ordini.map(x=>x.id===oid?{...x,stato:"confermato",confermatoAt:adesso}:x);
+    st.ordini = st.ordini.map(x=>x.id===oid?{...x,stato:"confermato",confermatoAt:adesso,confermatoDa:st.operatoreId||null}:x);
     salvaOrdini();
     /* arricchimento automatico dei prodotti (solo righe ordinate) */
     const righeOk = o.righe.filter(r=>r.ordinato);
@@ -1042,7 +1527,7 @@ const A = {
         const r = righeOk.find(x=>x.prodottoId===p.id);
         if(!r) return p;
         const voce = { data:adesso, fornitoreId:o.fornitoreId, strutturaId:o.strutturaId, repartoId:o.repartoId, quantita:r.quantita, unita:r.unita };
-        return {...p, ultimoFornitoreId:o.fornitoreId, ultimaStrutturaId:o.strutturaId, ultimoRepartoId:o.repartoId, ultimaData:adesso, storico:[voce,...(p.storico||[])].slice(0,10)};
+        return {...p, ultimoFornitoreId:o.fornitoreId||p.ultimoFornitoreId||null, ultimaStrutturaId:o.strutturaId, ultimoRepartoId:o.repartoId, ultimaData:adesso, storico:[voce,...(p.storico||[])].slice(0,10)};
       });
       salvaCatalogo();
     }
@@ -1052,10 +1537,38 @@ const A = {
     st.ordini = st.ordini.map(x=>x.id===oid?{...x,stato:"aperto",confermatoAt:null}:x);
     salvaOrdini(); render();
   },
+  chiediEliminaOrdine(){ st.confermaEliminaOrd=true; render(); },
+  annullaEliminaOrdine(){ st.confermaEliminaOrd=false; render(); },
+  eliminaOrdine(oid){
+    st.ordini = st.ordini.filter(o=>o.id!==oid);
+    salvaOrdini();
+    st.confermaEliminaOrd=false;
+    st.vista={name:"ordini"}; render();
+  },
+  apriModificaOrdine(){
+    const o = st.ordini.find(x=>x.id===st.vista.ordineId); if(!o) return;
+    st.modificaOrdine = { strutturaId:o.strutturaId||"", repartoId:o.repartoId||"", fornitoreId:o.fornitoreId||"" };
+    render();
+  },
+  setModOrd(campo,val){ if(st.modificaOrdine) st.modificaOrdine[campo]=val; },
+  annullaModOrd(){ st.modificaOrdine=null; render(); },
+  salvaModOrd(oid){
+    const m = st.modificaOrdine; if(!m) return;
+    st.ordini = st.ordini.map(o=>o.id!==oid?o:{...o, strutturaId:m.strutturaId, repartoId:m.repartoId, fornitoreId:m.fornitoreId});
+    salvaOrdini(); st.modificaOrdine=null; render();
+  },
+  stampaOrdine(oid){
+    const o = st.ordini.find(x=>x.id===oid); if(!o) return;
+    let area = document.getElementById("stampa-area");
+    if(!area){ area = document.createElement("div"); area.id = "stampa-area"; document.body.appendChild(area); }
+    area.innerHTML = stampaHTML(o);
+    window.print();
+  },
 
   /* catalogo */
   setCercaCat(val){ st.cercaCat=val; rinvia("render", render, 180); },
   setCatFiltro(val){ st.catFiltro = st.catFiltro===val?"":val; render(); },
+  setOrdCat(val){ st.ordCat=val; render(); },
   apriNuovoProd(){ st.nuovoProd={nome:"",categoria:"Altro"}; st.focusFid="np-nome"; render(); },
   setNuovoProd(campo,val){ st.nuovoProd[campo]=(campo==="nome")?val.toUpperCase():val; },
   salvaNuovoProd(){
@@ -1090,6 +1603,78 @@ const A = {
     st.vista={name:"nuovo"}; render();
   },
 
+  /* impostazioni · anagrafica strutture */
+  impNuovaApri(){ st.nuovaStrutturaImp={nome:""}; st.confermaElimina=null; st.editStruttura=null; st.focusFid="imp-nuova"; render(); },
+  impNuovaSet(val){ st.nuovaStrutturaImp.nome=val; },
+  impNuovaSalva(){
+    if(!st.nuovaStrutturaImp || !st.nuovaStrutturaImp.nome.trim()) return;
+    st.config.strutture.push({ id:uid("s"), nome:st.nuovaStrutturaImp.nome.trim(), simbolo:"" });
+    salvaConfig(); st.nuovaStrutturaImp=null; render();
+  },
+  impRinominaApri(id){
+    const s = struttura(id); if(!s) return;
+    st.editStruttura=id; st.editStrutturaNome=s.nome; st.confermaElimina=null; st.nuovaStrutturaImp=null;
+    st.focusFid="imp-nome-"+id; render();
+  },
+  impRinominaSet(val){ st.editStrutturaNome=val; },
+  impRinominaAnnulla(){ st.editStruttura=null; st.editStrutturaNome=""; render(); },
+  impRinominaSalva(){
+    if(!st.editStrutturaNome.trim()) return;
+    st.config.strutture = st.config.strutture.map(s=>s.id===st.editStruttura?{...s, nome:st.editStrutturaNome.trim()}:s);
+    salvaConfig(); st.editStruttura=null; st.editStrutturaNome=""; render();
+  },
+  impEliminaChiedi(id){ st.confermaElimina = st.confermaElimina===id?null:id; st.editStruttura=null; st.nuovaStrutturaImp=null; render(); },
+  impEliminaAnnulla(){ st.confermaElimina=null; render(); },
+  impElimina(id){
+    st.config.strutture = st.config.strutture.filter(s=>s.id!==id);
+    if(st.filtri.strutturaId===id) st.filtri.strutturaId="";
+    if(st.draft.strutturaId===id) st.draft.strutturaId="";
+    salvaConfig(); st.confermaElimina=null; render();
+  },
+
+  /* operatori e PIN */
+  impOpApri(){ st.nuovoOperatore={nome:"",pin:"",errore:""}; st.confermaEliminaOp=null; st.focusFid="op-nome"; render(); },
+  impOpSet(campo,val){ st.nuovoOperatore[campo] = (campo==="pin") ? val.replace(/\D/g,"").slice(0,6) : val; },
+  impOpSalva(){
+    const o = st.nuovoOperatore; if(!o) return;
+    const nome = o.nome.trim(), pin = o.pin.trim();
+    if(!nome){ o.errore="Inserisci il nome."; render(); return; }
+    if(!/^\d{4,6}$/.test(pin)){ o.errore="Il PIN deve avere da 4 a 6 cifre."; render(); return; }
+    if((st.config.operatori||[]).some(x=>x.pin===pin)){ o.errore="Questo PIN e' gia' in uso: scegline un altro."; render(); return; }
+    st.config.operatori = [...(st.config.operatori||[]), { id:uid("op"), nome, pin }];
+    salvaConfig();
+    if(!st.operatoreId) st.operatoreId = st.config.operatori[st.config.operatori.length-1].id;
+    st.nuovoOperatore=null; render();
+  },
+  impOpChiedi(id){ st.confermaEliminaOp = st.confermaEliminaOp===id?null:id; render(); },
+  impOpAnnulla(){ st.confermaEliminaOp=null; render(); },
+  impOpElimina(id){
+    st.config.operatori = (st.config.operatori||[]).filter(o=>o.id!==id);
+    if(st.operatoreId===id) st.operatoreId = null;
+    salvaConfig(); st.confermaEliminaOp=null; render();
+  },
+  setPin(val){
+    st.pinInput = val.replace(/\D/g,"").slice(0,6);
+    const op = (st.config.operatori||[]).find(o=>o.pin===st.pinInput);
+    if(op){ st.operatoreId = op.id; st.pinInput=""; render(); return; }
+    const e = document.getElementById("pin-err");
+    if(e) e.style.display = st.pinInput.length>=4 ? "block" : "none";
+  },
+  esciOperatore(){ st.operatoreId=null; st.pinInput=""; render(); },
+  setStatPeriodo(v){ st.statPeriodo=v; render(); },
+
+  /* svuotamento catalogo (doppia conferma) */
+  svuotaCatStep(n){ st.svuotaCat=n; st.svuotaTxt=""; st.svuotaErr=false; if(n===2) st.focusFid="svuota-txt"; render(); },
+  setSvuotaTxt(val){ st.svuotaTxt=val; },
+  svuotaCatalogo(){
+    if(norm(st.svuotaTxt)!=="ELIMINA"){ st.svuotaErr=true; render(); return; }
+    st.catalogo = [];
+    st.selPref = {};
+    salvaCatalogo();
+    st.svuotaCat=0; st.svuotaTxt=""; st.svuotaErr=false;
+    render();
+  },
+
   /* bolla d'acquisto */
   fileBolla(input){
     const f = input.files && input.files[0];
@@ -1122,15 +1707,79 @@ const A = {
   catBolla(idx,val){ st.bolla.items[idx].categoria = val; render(); },
   fornBolla(val){ st.bolla.fornitoreId = val; render(); },
   annullaBolla(){ st.bolla={fase:"idle",items:[],fornitoreId:"",errore:""}; render(); },
+  prezzoBolla(idx,val){
+    const n = parseFloat(String(val).replace(",", "."));
+    const it = st.bolla.items[idx];
+    it.prezzo = (isFinite(n) && n>0) ? Math.round(n*100)/100 : null;
+    it.variato = it.prezzo!=null && it.prezzoPrec!=null && Math.abs(it.prezzo-it.prezzoPrec)>0.004;
+  },
+  rinfrescaBolla(){ render(); },
+  confrontaBolla(oid){
+    st.bolla.confrontoOrdineId = oid || "";
+    st.bolla.controlloRegistrato = false;
+    const o = st.ordini.find(x=>x.id===oid);
+    st.bolla.confronto = o ? confrontaBollaOrdine(o) : null;
+    render();
+  },
+  registraControllo(){
+    const c = st.bolla.confronto;
+    if(!c) return;
+    st.ordini = st.ordini.map(o=>o.id!==c.ordineId?o:{...o, controllo:{
+      data:new Date().toISOString(),
+      conformi:c.ok.length,
+      mancanti:c.mancanti.map(r=>({ nome:r.nome, quantita:r.quantita, unita:r.unita })),
+      extra:c.extra.map(i=>({ nome:i.nome, quantita:(i.quantita!=null?i.quantita:null), um:(i.um||null) })),
+    }});
+    salvaOrdini();
+    st.bolla.controlloRegistrato = true;
+    render();
+  },
+  chiudiEsitoBolla(){ st.bolla={fase:"idle",items:[],fornitoreId:"",errore:""}; render(); },
   salvaBolla(){
+    const adesso = new Date().toISOString();
+    let fornId = st.bolla.fornitoreId || null;
+    if(fornId === "__nuovo__"){
+      const nomeF = (st.bolla.fornitoreNuovo||"").trim();
+      if(nomeF){
+        const gia = trovaFornitore(nomeF);
+        if(gia){ fornId = gia.id; }
+        else {
+          const f = { id:uid("f"), nome:nomeF, telefono:"", preferito:false };
+          st.config.fornitori.push(f);
+          salvaConfig();
+          fornId = f.id;
+        }
+      } else { fornId = null; }
+    }
+    const variazioni = [];
+    let aggiornati = 0;
+    /* prodotti esistenti selezionati: registro il prezzo e aggiorno fornitore/data */
+    st.catalogo = st.catalogo.map(p=>{
+      const i = st.bolla.items.find(x=>x.selezionato && x.esiste && norm(x.nome)===norm(p.nome));
+      if(!i || i.prezzo==null) return p;
+      if(i.prezzoPrec!=null && Math.abs(i.prezzo-i.prezzoPrec)>0.004){
+        variazioni.push({ nome:p.nome, da:i.prezzoPrec, a:i.prezzo });
+      }
+      aggiornati++;
+      const voce = { data:adesso, prezzo:i.prezzo, fornitoreId:fornId||p.ultimoFornitoreId||null, fonte:"bolla" };
+      return {...p,
+        prezzi:[voce, ...(p.prezzi||[])].slice(0,20),
+        ultimoPrezzo:i.prezzo,
+        ultimoFornitoreId:fornId||p.ultimoFornitoreId||null,
+        ultimaData:adesso };
+    });
+    /* prodotti nuovi selezionati */
     const nuovi = st.bolla.items.filter(i=>i.selezionato&&!i.esiste).map(i=>({
       id:uid("p"), nome:i.nome, categoria:i.categoria, note:"",
-      ultimoFornitoreId:st.bolla.fornitoreId||null, ultimaStrutturaId:null, ultimoRepartoId:null,
-      ultimaData:st.bolla.fornitoreId?new Date().toISOString():null, storico:[], origine:"bolla",
+      ultimoFornitoreId:fornId, ultimaStrutturaId:null, ultimoRepartoId:null,
+      ultimaData:fornId?adesso:null, storico:[], origine:"bolla",
+      ultimoPrezzo:(i.prezzo!=null?i.prezzo:null),
+      prezzi:(i.prezzo!=null?[{ data:adesso, prezzo:i.prezzo, fornitoreId:fornId, fonte:"bolla" }]:[]),
     }));
     st.catalogo = [...st.catalogo, ...nuovi];
     salvaCatalogo();
-    st.bolla={fase:"idle",items:[],fornitoreId:"",errore:""}; render();
+    st.bolla = { fase:"esito", items:[], fornitoreId:"", errore:"", variazioni, aggiunti:nuovi.length, aggiornati };
+    render();
   },
 };
 window.A = A;
@@ -1188,6 +1837,54 @@ function estraiJSON(testo){
   throw { msg:"L'elenco letto era incompleto e non sono riuscito a ricostruirlo. Riprova, se serve dividendo la bolla in due." };
 }
 
+/* riconoscimento fornitore dalla bolla: tollera umlaut (Woerndle/Worndle)
+   e ragioni sociali (Srl, GmbH...) */
+function piegaNome(s){
+  return norm(s).replace(/\u00d6/g,"O").replace(/OE/g,"O").replace(/\u00dc/g,"U").replace(/UE/g,"U").replace(/\u00c4/g,"A").replace(/AE/g,"A");
+}
+function trovaFornitore(nomeLetto){
+  const L = piegaNome(nomeLetto);
+  if(!L) return null;
+  return st.config.fornitori.find(f=>{
+    const N = piegaNome(f.nome);
+    return N && (L===N || L.includes(N) || N.includes(L));
+  }) || null;
+}
+function pulisciNomeForn(s){
+  let x = String(s).replace(/\s*[\/\-]\s*/g," ")
+    .replace(/\b(S\.?R\.?L\.?|G\.?M\.?B\.?H\.?|S\.?P\.?A\.?|SNC|SAS|AG|KG|OHG|INTERSERVICE)\b/gi,"")
+    .replace(/\s+/g," ").trim();
+  if(!x) x = String(s).trim();
+  return x.split(" ").map(w=>w ? w[0].toUpperCase()+w.slice(1).toLowerCase() : w).join(" ");
+}
+
+/* confronto bolla <-> ordine: nomi uguali (via catalogo) o molto simili */
+function nomiSimili(a, b){
+  const A = norm(a), B = norm(b);
+  if(A === B) return true;
+  const corto = A.length <= B.length ? A : B;
+  const lungo = A.length <= B.length ? B : A;
+  const parole = corto.split(" ").filter(w=>w.length>2);
+  if(!parole.length) return false;
+  return parole.every(w=>lungo.includes(w));
+}
+function confrontaBollaOrdine(o){
+  const items = st.bolla.items;
+  const attese = o.righe.filter(r=>r.ordinato);
+  const righe = attese.length ? attese : o.righe;
+  const usate = new Set();
+  const ok = [], extra = [];
+  items.forEach(i=>{
+    const prod = st.catalogo.find(x=>norm(x.nome)===norm(i.nome)) || null;
+    let r = prod ? righe.find(r=>!usate.has(r.id) && r.prodottoId===prod.id) : null;
+    if(!r) r = righe.find(r=>!usate.has(r.id) && nomiSimili(r.nome, i.nome));
+    if(r){ usate.add(r.id); ok.push({ riga:r, item:i }); }
+    else extra.push(i);
+  });
+  const mancanti = righe.filter(r=>!usate.has(r.id));
+  return { ok, extra, mancanti, ordineId:o.id };
+}
+
 async function leggiBolla(file){
   st.bolla = { fase:"caricamento", items:[], fornitoreId:"", errore:"" };
   render();
@@ -1200,11 +1897,11 @@ async function leggiBolla(file){
       const img = await comprimiImmagine(file);
       blocco = { type:"image", source:{ type:"base64", media_type: img.media, data: img.b64 } };
     }
-    const prompt = 'Questa è una bolla d\'acquisto / documento di consegna di un hotel (gastronomia e hôtellerie).\n'
-      +'Estrai l\'elenco dei prodotti. Ignora prezzi, codici articolo, IVA e totali. Ignora testo scritto a mano.\n'
-      +'Se i prodotti sono più di 60, elenca solo i primi 60.\n'
-      +'Rispondi SOLO con JSON valido e COMPATTO (una sola riga, senza spazi superflui), senza testo prima o dopo e senza backtick, in questo formato:\n'
-      +'{"fornitore":"nome fornitore se leggibile, altrimenti null","prodotti":[{"nome":"NOME PRODOTTO IN MAIUSCOLO","categoria":"una tra: '+CATEGORIE.join(", ")+'"}]}';
+    const prompt = 'Questa e\' una bolla di acquisto / documento di consegna (gastronomia e hotellerie).\n'
+      +'Estrai ogni prodotto con: PREZZO UNITARIO in euro (colonna prezzo, NON l\'importo totale di riga), QUANTITA consegnata (colonna quantita) come numero, e unita di misura um (KG, NR, CAR, STK, GL, SA...). Usa null per i valori non leggibili. Ignora codici articolo, IVA, sconti e totali. Ignora il testo scritto a mano.\n'
+      +'Se i prodotti sono piu\' di 40, elenca solo i primi 40.\n'
+      +'Rispondi SOLO con JSON valido e COMPATTO (una sola riga), senza testo prima o dopo e senza backtick, in questo formato:\n'
+      +'{"fornitore":"nome fornitore se leggibile, altrimenti null","prodotti":[{"nome":"NOME PRODOTTO IN MAIUSCOLO","categoria":"una tra: '+CATEGORIE.join(", ")+'","prezzo":12.34,"quantita":3,"um":"KG"}]}';
     if(!PROXY_LETTURA_BOLLE) throw { msg:"La lettura automatica delle bolle non e' configurata su questa installazione: manca l'URL del proxy (vedi README-pubblicazione, sezione Lettura bolle). Puoi comunque inserire i prodotti a mano dal catalogo." };
     let risposta;
     try{
@@ -1229,20 +1926,34 @@ async function leggiBolla(file){
     const testo = (data.content||[]).filter(c=>c.type==="text").map(c=>c.text).join("\n");
     if(!testo.trim()) throw { msg:"Il documento non è stato letto: riprova con una foto più nitida o un PDF." };
     const json = estraiJSON(testo);
-    const esistenti = new Set(st.catalogo.map(p=>norm(p.nome)));
     const visti = new Set();
-    const items = (json.prodotti||[]).map(p=>({
-      nome: norm(p.nome),
-      categoria: CATEGORIE.includes(p.categoria)?p.categoria:"Altro",
-      selezionato: !esistenti.has(norm(p.nome)),
-      esiste: esistenti.has(norm(p.nome)),
-    })).filter(i=>{
+    const items = (json.prodotti||[]).map(p=>{
+      const nome = norm(p.nome);
+      const prezzo = (typeof p.prezzo==="number" && isFinite(p.prezzo) && p.prezzo>0) ? Math.round(p.prezzo*100)/100 : null;
+      const prodotto = st.catalogo.find(x=>norm(x.nome)===nome) || null;
+      const prezzoPrec = (prodotto && prodotto.ultimoPrezzo!=null) ? prodotto.ultimoPrezzo : null;
+      const variato = prezzo!=null && prezzoPrec!=null && Math.abs(prezzo-prezzoPrec) > 0.004;
+      return {
+        nome,
+        categoria: CATEGORIE.includes(p.categoria)?p.categoria:"Altro",
+        prezzo, prezzoPrec, variato,
+        quantita: (typeof p.quantita==="number" && isFinite(p.quantita) && p.quantita>0) ? p.quantita : null,
+        um: p.um ? String(p.um).trim().toUpperCase().slice(0,8) : null,
+        esiste: !!prodotto,
+        /* nuovi: sempre selezionati - esistenti: selezionati se c'e' un prezzo nuovo o cambiato */
+        selezionato: !prodotto || (prezzo!=null && (prezzoPrec==null || variato)),
+      };
+    }).filter(i=>{
       if(!i.nome || visti.has(i.nome)) return false;
       visti.add(i.nome); return true;
     });
     if(!items.length) throw { msg:"Nessun prodotto riconosciuto nel documento: controlla che sia una bolla e che il testo sia leggibile." };
-    const fornSugg = json.fornitore ? (st.config.fornitori.find(f=>norm(f.nome)===norm(String(json.fornitore)))?.id||"") : "";
-    st.bolla = { fase:"revisione", items, fornitoreId:fornSugg, errore:"" };
+    const nomeForn = json.fornitore ? String(json.fornitore).trim() : "";
+    const fMatch = nomeForn ? trovaFornitore(nomeForn) : null;
+    st.bolla = { fase:"revisione", items,
+      fornitoreId: fMatch ? fMatch.id : (nomeForn ? "__nuovo__" : ""),
+      fornitoreNuovo: (nomeForn && !fMatch) ? pulisciNomeForn(nomeForn) : "",
+      errore:"" };
   }catch(e){
     st.bolla = { fase:"idle", items:[], fornitoreId:"",
       errore:(e && e.msg) ? e.msg : "Non sono riuscito a leggere la bolla. Riprova con una foto più nitida o un PDF.",
@@ -1290,7 +2001,54 @@ async function provaConnessione(){
   const problema = await provaConnessione();
   if(problema){ schermataConfig(problema); return; }
   st.config   = await caricaChiave(K_CONFIG,   { strutture:[], reparti:seedReparti, fornitori:seedFornitori });
-  st.catalogo = await caricaChiave(K_CATALOGO, seedCatalogo);
+  if(!Array.isArray(st.config.operatori)) st.config.operatori = [];
+
+  /* L'elenco prodotti della prima lista non resta fisso nel codice:
+     al primissimo avvio viene scritto UNA VOLTA SOLA nel catalogo generale
+     sul database, e da quel momento il catalogo su Firebase e' l'unica
+     fonte — i prodotti si modificano ed eliminano come tutti gli altri,
+     e l'app non li reinserisce mai piu' da sola. */
+  const K_INIZ = "catalogo-inizializzato";
+  st.catalogo = await caricaChiave(K_CATALOGO, null);
+  let versioneCat = await caricaChiave(K_INIZ, 0);
+  if(versioneCat === true) versioneCat = 1; /* vecchio marcatore */
+  /* v3: il fornitore Minus (bolle demo) entra in anagrafica se manca */
+  if(versioneCat < 3 && !st.config.fornitori.some(f=>norm(f.nome)==="MINUS")){
+    st.config.fornitori.push({ id:"f-minus", nome:"Minus", telefono:"", preferito:false });
+    await salva(K_CONFIG, st.config);
+  }
+  if(st.catalogo === null){
+    st.catalogo = versioneCat ? [] : seedCatalogo.concat(INTEGRAZIONE_V2, INTEGRAZIONE_V3);
+    await salva(K_CATALOGO, st.catalogo);
+    await salva(K_INIZ, 3);
+  } else if(versioneCat < 3){
+    /* integrazione UNA TANTUM: aggiunge solo le voci non gia' presenti,
+       poi non tocca piu' nulla (le eliminazioni future restano rispettate) */
+    const presenti = new Set(st.catalogo.map(p=>norm(p.nome)));
+    const daIntegrare = (versioneCat < 2 ? INTEGRAZIONE_V2.concat(INTEGRAZIONE_V3) : INTEGRAZIONE_V3)
+      .filter(p=>!presenti.has(norm(p.nome)));
+    if(daIntegrare.length){
+      st.catalogo = st.catalogo.concat(daIntegrare);
+      await salva(K_CATALOGO, st.catalogo);
+    }
+    await salva(K_INIZ, 3);
+  }
+  if(versioneCat < 4){
+    /* v4: prezzi delle bolle demo sulle voci gia' presenti senza storico prezzi */
+    const mappa = new Map(INTEGRAZIONE_V3.map(p=>[norm(p.nome), p]));
+    let toccato = false;
+    st.catalogo = st.catalogo.map(p=>{
+      const demo = mappa.get(norm(p.nome));
+      if(demo && demo.ultimoPrezzo!=null && (!p.prezzi || !p.prezzi.length)){
+        toccato = true;
+        return {...p, prezzi: demo.prezzi.slice(), ultimoPrezzo: demo.ultimoPrezzo};
+      }
+      return p;
+    });
+    if(toccato) await salva(K_CATALOGO, st.catalogo);
+    await salva(K_INIZ, 4);
+  }
+
   st.ordini   = await caricaChiave(K_ORDINI,   []);
   st.caricamento = false;
   render();
