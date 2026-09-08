@@ -213,7 +213,7 @@
   .ba-primaria{flex:1.6; padding:13px 8px; background:var(--verde); color:#fff; border-radius:12px; font-weight:700; font-size:14px; display:flex; align-items:center; justify-content:center; gap:6px; box-shadow:0 4px 12px rgba(31,66,52,.25);}
   .ba-primaria:hover{background:var(--verde-scuro);}
   .ba-elimina{width:50px; flex:none; border:1.5px dashed var(--rosso); color:var(--rosso); background:var(--carta); border-radius:12px; display:flex; align-items:center; justify-content:center;}
-  .gruppo-forn{font-family:'Oswald','Arial Narrow','Helvetica Neue Condensed','Impact',sans-serif; font-weight:700; font-size:13px; letter-spacing:.04em; text-transform:uppercase; color:var(--verde); margin:14px 2px 8px; padding-bottom:4px; border-bottom:1px solid var(--verde);}
+  .gruppo-forn{font-family:'Oswald','Arial Narrow','Helvetica Neue Condensed','Impact',sans-serif; font-weight:700; font-size:13px; letter-spacing:.04em; text-transform:uppercase; color:var(--verde); margin:14px 2px 8px; padding-bottom:4px; border-bottom:1px solid var(--verde); display:flex; justify-content:space-between; align-items:center; gap:8px;}
 
   /* --- catalogo / bolla --- */
   .card-bolla{padding:16px; margin-bottom:14px; background:var(--crema); border:1.5px dashed var(--linea-input); border-radius:16px;}
@@ -246,6 +246,20 @@
   .risp-riga{padding:9px 0; border-bottom:1px solid var(--linea);}
   .risp-riga:last-child{border-bottom:none; padding-bottom:2px;}
   .risp-sub{font-size:11px; color:var(--grigio); margin-top:2px;}
+  .stat-filtri{display:flex; gap:6px; flex-wrap:wrap; margin-bottom:8px; align-items:center;}
+  .stat-filtri label{display:flex; align-items:center; gap:6px; font-size:11px; color:var(--grigio-verde); font-weight:600; letter-spacing:.06em; text-transform:uppercase;}
+  .stat-filtri input[type=date]{padding:7px 8px; border:1px solid var(--linea-input); border-radius:8px; background:var(--carta); font-size:12px; font-family:inherit;}
+  .stat-filtri select{flex:1; min-width:132px; padding:8px; border:1px solid var(--linea-input); border-radius:8px; background:var(--carta); font-size:12px; font-family:inherit;}
+  .cal-testa{font-family:'Oswald','Arial Narrow','Helvetica Neue Condensed','Impact',sans-serif; font-weight:700; font-size:15px; text-transform:uppercase; letter-spacing:.03em; display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;}
+  .cal-oggi{border:1.5px solid var(--verde);}
+  .chip-oggi{font-size:9px; font-weight:700; letter-spacing:.18em; text-transform:uppercase; background:var(--verde); color:#fff; border-radius:999px; padding:3px 9px;}
+  .cal-voce{display:flex; align-items:center; gap:8px; font-size:12px; padding:7px 0; border-top:1px dashed var(--linea); flex-wrap:wrap;}
+  .cal-tag{font-size:9px; font-weight:700; letter-spacing:.1em; border-radius:6px; padding:3px 7px; text-transform:uppercase; flex:none;}
+  .cal-tag.scad{background:var(--rosso); color:#fff;}
+  .cal-tag.cons{background:var(--verde-tenue); color:var(--verde); border:1px solid var(--verde);}
+  .cal-ordina{margin-left:auto;}
+  .avviso-scad{padding:12px; margin-bottom:12px; border:1.5px solid var(--rosso); background:#fdf6f4;}
+  .badge-punto{position:absolute; top:2px; right:2px; min-width:15px; height:15px; padding:0 3px; background:var(--rosso); color:#fff; font-size:9px; font-weight:700; border-radius:999px; display:flex; align-items:center; justify-content:center; line-height:1;}
 
   /* --- stampa ordine --- */
   #stampa-area{display:none;}
@@ -266,6 +280,7 @@
     .st-tab td{border:1px solid #999; padding:5px 6px; vertical-align:top;}
     .st-tab tr{page-break-inside:avoid;}
     .st-tab .st-gruppo td{background:#e8e8e2; font-weight:700; text-transform:uppercase; font-size:8px; letter-spacing:.12em; border:1px solid #999; -webkit-print-color-adjust:exact; print-color-adjust:exact;}
+    .st-doc + .st-doc{page-break-before:always;}
     .st-tot{margin-top:6px; font-size:10px; font-weight:700; letter-spacing:.1em; text-transform:uppercase;}
     .st-ctrl{margin-top:10px; font-size:10px; border:1px solid #999; padding:6px 8px;}
     .st-firma{display:flex; gap:48px; margin-top:36px;}
@@ -354,6 +369,8 @@ const FIREBASE_CONFIG = {
    NON incollare MAI la chiave API Anthropic qui dentro: va solo nel Worker. */
 const PROXY_LETTURA_BOLLE = "https://ordini.ezioprinoth.workers.dev";
 
+const GIORNI_SETT = ["Luned\u00ec","Marted\u00ec","Mercoled\u00ec","Gioved\u00ec","Venerd\u00ec","Sabato","Domenica"];
+const GIORNI_BREVI = ["Lun","Mar","Mer","Gio","Ven","Sab","Dom"];
 const CATEGORIE = ["Pasticceria","Cereali e semi","Bevande","Tè e infusi","Marmellate e spalmabili","Latticini","Frutta sciroppata","Pane e grissini","Salse","Dolci e gelato","Gastronomia","Non food","Altro"];
 const UNITA = ["pz","cf","kg","lt","ct"];
 
@@ -400,6 +417,9 @@ function ico(nome, s=16){
     ingranaggio:'<path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/>',
     grafico:'<line x1="12" y1="20" x2="12" y2="10"/><line x1="18" y1="20" x2="18" y2="4"/><line x1="6" y1="20" x2="6" y2="16"/>',
     stampa:'<polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/>',
+    unisci:'<path d="M8 3v5a4 4 0 0 0 8 0V3"/><path d="M12 12v6"/><path d="m9 15 3 3 3-3"/>',
+    calendario:'<rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/>',
+    invia:'<path d="m22 2-7 20-4-9-9-4Z"/><path d="M22 2 11 13"/>',
     stella:'<polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>',
   }[nome] || '';
   return '<svg width="'+s+'" height="'+s+'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">'+p+'</svg>';
@@ -536,7 +556,8 @@ const st = {
   editStruttura:null, editStrutturaNome:"", nuovaStrutturaImp:null, confermaElimina:null,
   ordCat:"nome",
   operatoreId:null, pinInput:"", statPeriodo:"90", nuovoOperatore:null, confermaEliminaOp:null,
-  confermaEliminaOrd:false, modificaOrdine:null, svuotaCat:0, svuotaTxt:"", confermaForn:"", raggruppaForn:null,
+  statDa:"", statA:"", statFStruttura:"", statFFornitore:"", statFReparto:"", statFOperatore:"",
+  confermaEliminaOrd:false, modificaOrdine:null, svuotaCat:0, svuotaTxt:"", confermaForn:"", raggruppaForn:null, pickerSoloForn:null, editForn:null, confermaEliminaForn:null, unisciForn:null, unisciTarget:"", consegneForn:null, preForn:false, avvisoScadChiuso:false, waPanel:false,
   bolla:{ fase:"idle", items:[], fornitoreId:"", errore:"" },
   focusFid:null, ultimoSalvataggio:null,
 };
@@ -795,10 +816,24 @@ function picker(){
   const t = norm(st.cercaPicker);
   const righe = righeCorrenti();
   const sel = new Set(righe.map(r=>r.prodottoId));
-  const prodotti = st.catalogo.filter(p=>!t||norm(p.nome).includes(t)).sort((a,b)=>a.nome.localeCompare(b.nome));
+  const fornScelto = st.pickerCtx.tipo==="draft"
+    ? (st.draft.fornitoreId||"")
+    : ((st.ordini.find(o=>o.id===st.pickerCtx.id)||{}).fornitoreId||"");
+  const nDelForn = fornScelto ? st.catalogo.filter(p=>p.ultimoFornitoreId===fornScelto).length : 0;
+  const soloForn = !!fornScelto && nDelForn>0 && (st.pickerSoloForn===null ? true : st.pickerSoloForn);
+  const prodotti = st.catalogo
+    .filter(p=>(!soloForn || p.ultimoFornitoreId===fornScelto) && (!t||norm(p.nome).includes(t)))
+    .sort((a,b)=>a.nome.localeCompare(b.nome));
 
   let h = '<div class="cerca">'+ico("cerca",15)
     +'<input data-fid="pk-cerca" value="'+esc(st.cercaPicker)+'" placeholder="Cerca prodotto…" oninput="A.setCercaPicker(this.value)"></div>';
+  if(fornScelto && nDelForn>0){
+    const nomeF = fornitore(fornScelto)?.nome||"fornitore";
+    h += '<div style="display:flex;gap:6px;margin-bottom:8px;flex-wrap:wrap">'
+      +'<button class="btn-mini'+(soloForn?' on':'')+'" onclick="A.setPickerSoloForn(true)">Solo '+esc(nomeF)+' \u00b7 '+nDelForn+'</button>'
+      +'<button class="btn-mini'+(!soloForn?' on':'')+'" onclick="A.setPickerSoloForn(false)">Tutti i prodotti</button>'
+      +'</div>';
+  }
 
   if(st.rapido===null){
     h += '<button class="link-scuro" onclick="A.apriRapido()">'+ico("piu",11)+' Il prodotto non c\'è? Aggiungilo al volo</button>';
@@ -858,7 +893,7 @@ function vDettaglio(){
     +'<div class="to-sub">'+esc(r?.nome||"")+' · fornitore <b>'+esc(f?.nome||"Tutti i fornitori")+'</b></div>'
     +'<div class="to-meta">'+esc(o.numero)+(o.derivatoDa?' · residuo di '+esc(o.derivatoDa):'')+(o.proseguitoIn?' · prosegue in '+esc(o.proseguitoIn):'')+' · creato '+fmtData(o.data)+' '+fmtOra(o.data)
     +(o.creatoDa?' · di '+esc(opNome(o.creatoDa)||'?'):'')+(o.confermatoAt?' · confermato '+fmtData(o.confermatoAt)+' '+fmtOra(o.confermatoAt)+(o.confermatoDa?' da '+esc(opNome(o.confermatoDa)||'?'):''):'')+'</div></div></div>'
-    +'<div style="display:flex;flex-direction:column;align-items:flex-end;gap:6px">'+'<span class="pill '+(aperto?'pill-aperto':(ordineParziale(o)?'pill-parz':'pill-conf'))+'">'+(aperto?'Aperto':(ordineParziale(o)?'Parziale':'Confermato'))+'</span>'+(aperto?'<button class="btn-icona" title="Modifica struttura, reparto o fornitore" onclick="A.apriModificaOrdine()">'+ico("matita",15)+'</button>':'')+'<button class="btn-icona" title="Stampa ordine" onclick="A.stampaOrdine(\''+o.id+'\')">'+ico("stampa",15)+'</button>'+'</div></div>'
+    +'<div style="display:flex;flex-direction:column;align-items:flex-end;gap:6px">'+'<span class="pill '+(aperto?'pill-aperto':(ordineParziale(o)?'pill-parz':'pill-conf'))+'">'+(aperto?'Aperto':(ordineParziale(o)?'Parziale':'Confermato'))+'</span>'+(aperto?'<button class="btn-icona" title="Modifica struttura, reparto o fornitore" onclick="A.apriModificaOrdine()">'+ico("matita",15)+'</button>':'')+'<button class="btn-icona" title="Stampa ordine" onclick="A.stampaOrdine(\''+o.id+'\')">'+ico("stampa",15)+'</button>'+'<button class="btn-icona" title="Invia su WhatsApp" onclick="A.apriWa(\''+o.id+'\')">'+ico("invia",15)+'</button>'+'</div></div>'
     +'<div class="prog-etic"><span>Prodotti ordinati</span><b>'+fatti+' / '+o.righe.length+'</b></div>'
     +metro(pct)+'</div>';
 
@@ -885,6 +920,24 @@ function vDettaglio(){
     h += '<div class="form-inline"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">'
       +'<b style="font-size:11px;letter-spacing:.14em;text-transform:uppercase">Aggiungi prodotti</b><button style="color:var(--grigio);padding:4px" onclick="A.chiudiAggiungiProdotti()">'+ico("x",16)+'</button></div>'
       +picker()+'</div>';
+  }
+  if(st.waPanel){
+    const gm = new Map();
+    o.righe.forEach(rg=>{ const fid = fornDiRiga(rg); gm.set(fid, (gm.get(fid)||0)+1); });
+    const chiaviWa = [...gm.keys()].sort((a,b)=>{
+      const na = a ? (fornitore(a)?.nome||"~") : "~~"; const nb = b ? (fornitore(b)?.nome||"~") : "~~";
+      return na.localeCompare(nb);
+    });
+    h += '<div class="form-inline"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">'
+      +'<b style="font-size:11px;letter-spacing:.14em;text-transform:uppercase">Invia su WhatsApp</b>'
+      +'<button style="color:var(--grigio);padding:4px" onclick="A.chiudiWa()">'+ico("x",16)+'</button></div>'
+      +'<p class="suggerimento" style="margin:0 0 8px">Un messaggio per fornitore, con i suoi articoli. Se il fornitore ha il telefono in anagrafica, la chat si apre gi\u00e0 sul suo numero.</p>';
+    chiaviWa.forEach(fid=>{
+      const nomeW = fid ? (fornitore(fid)?.nome||"Fornitore eliminato") : "Senza fornitore";
+      const fW = fid ? fornitore(fid) : null;
+      h += '<button class="btn btn-ghost" style="width:100%;margin-bottom:8px;justify-content:space-between;display:flex" onclick="A.inviaWhatsApp(\''+o.id+'\', \''+fid+'\')"><span>'+esc(nomeW)+(fW && !telWa(fW)?' <span style="font-size:10px;color:var(--grigio)">(senza numero)</span>':'')+'</span><span>'+gm.get(fid)+' articoli</span></button>';
+    });
+    h += '<button class="btn btn-dark" style="width:100%" onclick="A.inviaWhatsApp(\''+o.id+'\', null)">Tutto l\'ordine in un messaggio</button></div>';
   }
   if(aperto && st.confermaVisibile){
     const selForn = !o.fornitoreId
@@ -969,7 +1022,8 @@ function vDettaglio(){
       const rr = gruppi.get(fid);
       const nomeG = fid ? (fornitore(fid)?.nome||"Fornitore eliminato") : "Senza fornitore";
       const fattiG = rr.filter(x=>x.ordinato).length;
-      h += '<div class="gruppo-forn">'+esc(nomeG)+' \u00b7 '+fattiG+'/'+rr.length+'</div>';
+      h += '<div class="gruppo-forn"><span>'+esc(nomeG)+' \u00b7 '+fattiG+'/'+rr.length+'</span>'
+        +'<button class="btn-mini" onclick="A.inviaWhatsApp(\''+o.id+'\', \''+fid+'\')">'+ico("invia",12)+' Invia</button></div>';
       rr.forEach(rg=>{ h += rigaHTML(rg); });
     });
   } else {
@@ -1266,6 +1320,64 @@ function vImpostazioni(){
     }
   });
 
+  /* --- anagrafica fornitori --- */
+  h += '<div class="mt12">'+sezTit("Fornitori")+'</div>';
+  h += '<p class="suggerimento">Rinomina, unisci i doppioni creati dalle bolle o elimina. Unendo due fornitori, prodotti, prezzi e ordini passano a quello che tieni.</p>';
+  st.config.fornitori.slice().sort((a,b)=>a.nome.localeCompare(b.nome)).forEach(f=>{
+    const nProd = st.catalogo.filter(p=>p.ultimoFornitoreId===f.id).length;
+    const nOrd = st.ordini.filter(o=>o.fornitoreId===f.id).length;
+    if(st.editForn && st.editForn.id===f.id){
+      h += '<div class="form-inline">'
+        +'<input data-fid="ef-nome" value="'+esc(st.editForn.nome)+'" oninput="A.impFornSetNome(this.value)">'
+        +'<input data-fid="ef-tel" inputmode="tel" placeholder="Telefono / WhatsApp (es. 348 1234567)" value="'+esc(st.editForn.telefono)+'" oninput="A.impFornSetTel(this.value)">'
+        +'<div class="righe-btn"><button class="btn btn-ghost" onclick="A.chiudiForm(\'editForn\')">Annulla</button>'
+        +'<button class="btn btn-dark" onclick="A.impFornSalvaNome()">Salva</button></div></div>';
+    } else {
+      h += '<div class="imp-riga">'
+        +'<span class="mono">'+esc(mono(f.nome))+'</span>'
+        +'<div style="flex:1;min-width:0"><div class="imp-nome">'+esc(f.nome)+'</div>'
+        +'<div class="imp-sub">'+nProd+' prodotti \u00b7 '+nOrd+' ordini'+(f.telefono?' \u00b7 '+esc(f.telefono):'')+'</div></div>'
+        +'<div class="mini-azioni">'
+        +'<button title="Preferito" onclick="A.togglePreferito(\''+f.id+'\')">'+stella(!!f.preferito,15)+'</button>'
+        +'<button title="Rinomina" onclick="A.impFornApriRinomina(\''+f.id+'\')">'+ico("matita",15)+'</button>'
+        +'<button title="Giorni di fornitura e termine ordine" onclick="A.consegneApri(\''+f.id+'\')">'+ico("calendario",15)+'</button>'
+        +'<button title="Unisci con un altro fornitore" onclick="A.impFornUnisciApri(\''+f.id+'\')">'+ico("unisci",15)+'</button>'
+        +'<button title="Elimina" onclick="A.impFornChiedi(\''+f.id+'\')">'+ico("cestino",15)+'</button>'
+        +'</div></div>';
+    }
+    if(st.consegneForn===f.id){
+      const cs = f.consegne||[];
+      h += '<div class="form-inline"><b style="font-size:11px;letter-spacing:.14em;text-transform:uppercase;display:block;margin-bottom:8px">Giorni di fornitura \u00b7 '+esc(f.nome)+'</b>'
+        +'<div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px">'
+        +GIORNI_BREVI.map((g,wd)=>'<button class="btn-mini'+(cs.some(c=>c.giorno===wd)?' on':'')+'" onclick="A.consegnaToggleGiorno(\''+f.id+'\','+wd+')">'+g+'</button>').join("")
+        +'</div>';
+      if(!cs.length) h += '<p class="suggerimento" style="margin:0 0 8px">Tocca i giorni in cui questo fornitore consegna.</p>';
+      cs.forEach(c=>{
+        h += '<div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;font-size:12px;flex-wrap:wrap">'
+          +'<b style="width:32px;flex:none">'+GIORNI_BREVI[c.giorno]+'</b><span style="flex:none">ordina entro</span>'
+          +'<select style="flex:1;min-width:120px;width:auto;margin:0" onchange="A.consegnaSet(\''+f.id+'\','+c.giorno+',\'anticipo\', this.value)">'
+          +[[0,"lo stesso giorno"],[1,"1 giorno prima"],[2,"2 giorni prima"],[3,"3 giorni prima"]].map(o=>'<option value="'+o[0]+'"'+((c.anticipo||0)===o[0]?' selected':'')+'>'+o[1]+'</option>').join("")
+          +'</select>'
+          +'<input type="time" value="'+esc(c.entroOra||"12:00")+'" style="width:96px;margin:0;flex:none" onchange="A.consegnaSet(\''+f.id+'\','+c.giorno+',\'entroOra\', this.value)">'
+          +'</div>';
+      });
+      h += '<button class="btn btn-dark" style="width:100%" onclick="A.consegneChiudi()">Fatto</button></div>';
+    }
+    if(st.unisciForn===f.id){
+      h += '<div class="avviso-conferma mb8"><p>Unisci <b>'+esc(f.nome)+'</b> con\u2026 (prodotti, prezzi e ordini passeranno al fornitore scelto, e &laquo;'+esc(f.nome)+'&raquo; verr\u00e0 eliminato)</p>'
+        +'<select class="bolla-forn" onchange="A.impFornUnisciTarget(this.value)"><option value="">Scegli il fornitore da tenere\u2026</option>'
+        +st.config.fornitori.filter(x=>x.id!==f.id).sort((a,b)=>a.nome.localeCompare(b.nome)).map(x=>'<option value="'+x.id+'"'+(st.unisciTarget===x.id?' selected':'')+'>'+esc(x.nome)+'</option>').join("")
+        +'</select>'
+        +'<div style="display:flex;gap:8px"><button class="btn btn-ghost" style="flex:1" onclick="A.impFornUnisciAnnulla()">Annulla</button>'
+        +'<button class="btn btn-dark" style="flex:1" onclick="A.impFornUnisci()">Unisci</button></div></div>';
+    }
+    if(st.confermaEliminaForn===f.id){
+      h += '<div class="avviso-conferma mb8" style="border-color:var(--rosso)"><p>Eliminare &laquo;'+esc(f.nome)+'&raquo;? Prodotti e ordini restano, ma senza l\'etichetta di questo fornitore. Se \u00e8 un doppione, meglio &laquo;Unisci&raquo;.</p>'
+        +'<div style="display:flex;gap:8px"><button class="btn btn-ghost" style="flex:1" onclick="A.impFornAnnulla()">Annulla</button>'
+        +'<button class="btn btn-dark" style="flex:1;background:var(--rosso)" onclick="A.impFornElimina(\''+f.id+'\')">Elimina</button></div></div>';
+    }
+  });
+
   /* --- operatori e PIN --- */
   h += '<div class="mt12">'+sezTit("Operatori e PIN")+'</div>';
   h += '<p class="suggerimento">Chi elabora gli ordini si registra qui con nome e PIN. Con almeno un operatore attivo, all\'apertura l\'app chiede il PIN e ogni ordine registra chi lo ha creato e confermato.</p>';
@@ -1292,6 +1404,30 @@ function vImpostazioni(){
         +'<button class="btn btn-dark" style="flex:1" onclick="A.impOpElimina(\''+op.id+'\')">Elimina</button></div></div>';
     }
   });
+
+  /* --- notifiche di scadenza --- */
+  h += '<div class="mt12">'+sezTit("Notifiche di scadenza")+'</div>';
+  const supportoNot = ("Notification" in window);
+  const statoNot = supportoNot ? Notification.permission : "no";
+  h += '<p class="suggerimento">Con le notifiche attive, mentre l\'app \u00e8 aperta in una scheda ricevi un avviso di sistema circa un\'ora prima del termine d\'ordine e un richiamo all\'ultimo momento. In app, comunque, vedi sempre il riquadro rosso delle scadenze e il pallino sul calendario.</p>';
+  if(!supportoNot){
+    h += '<div class="vuoto">Questo browser non supporta le notifiche di sistema.</div>';
+  } else if(statoNot==="granted"){
+    h += '<div class="avviso-conferma"><p>Notifiche attive su questo dispositivo.</p></div>';
+  } else if(statoNot==="denied"){
+    h += '<div class="err-box">Notifiche bloccate dal browser: sbloccale dalle impostazioni del sito (icona del lucchetto nella barra degli indirizzi).</div>';
+  } else {
+    h += '<button class="btn btn-dark" style="width:100%" onclick="A.attivaNotifiche()">Attiva le notifiche su questo dispositivo</button>';
+  }
+
+  /* --- canale WhatsApp --- */
+  h += '<div class="mt12">'+sezTit("WhatsApp")+'</div>';
+  const canaleWa = st.config.waCanale || "web";
+  h += '<p class="suggerimento">Funziona anche con <b>WhatsApp Business</b>: collega l\'account dal telefono (Impostazioni \u2192 Dispositivi collegati). Su computer scegli dove aprire gli ordini:</p>';
+  h += '<div style="display:flex;gap:6px;flex-wrap:wrap">'
+    +'<button class="btn-mini'+(canaleWa==="web"?' on':'')+'" onclick="A.setCanaleWa(\'web\')">WhatsApp Web (browser)</button>'
+    +'<button class="btn-mini'+(canaleWa==="app"?' on':'')+'" onclick="A.setCanaleWa(\'app\')">Applicazione installata sul PC</button>'
+    +'</div>';
   return h;
 }
 
@@ -1313,25 +1449,62 @@ function vBlocco(){
 
 function vStatistiche(){
   const per = st.statPeriodo;
-  const da = per==="tutto" ? null : new Date(Date.now() - Number(per)*86400000);
-  const oo = st.ordini.filter(o=>!da || new Date(o.data) >= da);
+  let da = null, aFine = null;
+  if(st.statDa){ const d0 = new Date(st.statDa+"T00:00:00"); if(!isNaN(d0)) da = d0; }
+  if(st.statA){ const d1 = new Date(st.statA+"T23:59:59"); if(!isNaN(d1)) aFine = d1; }
+  const usaDate = !!(st.statDa || st.statA);
+  if(!da && !usaDate && per!=="tutto") da = new Date(Date.now() - Number(per)*86400000);
+  const fS = st.statFStruttura, fF = st.statFFornitore, fR = st.statFReparto, fO = st.statFOperatore;
+
+  const oo = st.ordini.filter(o=>{
+    const d = new Date(o.data);
+    if(da && d < da) return false;
+    if(aFine && d > aFine) return false;
+    if(fS && o.strutturaId!==fS) return false;
+    if(fR && o.repartoId!==fR) return false;
+    if(fO && (o.creatoDa||"")!==fO) return false;
+    /* filtro fornitore: escludo gli ordini di ALTRI fornitori;
+       gli ordini "tutti i fornitori" passano e si filtrano riga per riga */
+    if(fF && o.fornitoreId && o.fornitoreId!==fF) return false;
+    return true;
+  });
   const conf = oo.filter(o=>o.stato==="confermato").length;
-  let righeOrd = 0; oo.forEach(o=>{ righeOrd += o.righe.filter(r=>r.ordinato).length; });
 
-  const conta = (fn) => {
+  /* righe analitiche: solo prodotti segnati come ordinati, valorizzate in euro */
+  const righeSet = [];
+  oo.forEach(o=>o.righe.forEach(r=>{
+    if(!r.ordinato) return;
+    const fidRiga = o.fornitoreId || fornDiRiga(r) || "";
+    if(fF && fidRiga!==fF) return;
+    const p = r.prodottoId ? st.catalogo.find(x=>x.id===r.prodottoId) : null;
+    const prezzo = (p && p.ultimoPrezzo!=null) ? p.ultimoPrezzo : null;
+    const qta = Number(r.quantita)||0;
+    righeSet.push({ o, r, fid:fidRiga, categoria:(p?.categoria)||"Altro",
+      prezzo, valore: prezzo!=null ? prezzo*qta : 0, conPrezzo: prezzo!=null });
+  }));
+  const righeOrd = righeSet.length;
+  const righeConPrezzo = righeSet.filter(x=>x.conPrezzo).length;
+  const spesaTot = righeSet.reduce((s,x)=>s+x.valore, 0);
+  const ordiniConRighe = new Set(righeSet.map(x=>x.o.id)).size;
+  const mediaOrdine = ordiniConRighe ? spesaTot/ordiniConRighe : 0;
+
+  const aggEuro = (fn) => {
     const m = new Map();
-    oo.forEach(o=>{ const k = fn(o); m.set(k, (m.get(k)||0)+1); });
-    return [...m.entries()].sort((a,b)=>b[1]-a[1]);
+    righeSet.forEach(x=>{
+      const k = fn(x) || "\u2014";
+      const g = m.get(k) || { k, eur:0, n:0, qta:0 };
+      g.eur += x.valore; g.n++; g.qta += (Number(x.r.quantita)||0);
+      m.set(k, g);
+    });
+    return [...m.values()].sort((a,b)=>b.eur-a.eur);
   };
-  const perStruttura = conta(o=>struttura(o.strutturaId)?.nome||"\u2014");
-  const perFornitore = conta(o=>fornitore(o.fornitoreId)?.nome||"Tutti i fornitori");
-  const perReparto = conta(o=>reparto(o.repartoId)?.nome||"\u2014");
+  const eurStruttura = aggEuro(x=>struttura(x.o.strutturaId)?.nome||"\u2014");
+  const eurFornitore = aggEuro(x=>x.fid ? (fornitore(x.fid)?.nome||"Fornitore eliminato") : "Senza fornitore");
+  const eurReparto = aggEuro(x=>reparto(x.o.repartoId)?.nome||"\u2014");
   const conOperatori = (st.config.operatori||[]).length || st.ordini.some(o=>o.creatoDa);
-  const perOperatore = conOperatori ? conta(o=>opNome(o.creatoDa)||"Senza operatore") : [];
-
-  const mp = new Map();
-  oo.forEach(o=>o.righe.forEach(r=>{ if(!r.ordinato) return; mp.set(r.nome, (mp.get(r.nome)||0) + (Number(r.quantita)||1)); }));
-  const topProdotti = [...mp.entries()].sort((a,b)=>b[1]-a[1]);
+  const eurOperatore = conOperatori ? aggEuro(x=>opNome(x.o.creatoDa)||"Senza operatore") : [];
+  const eurCategoria = aggEuro(x=>x.categoria);
+  const topProdottiEuro = aggEuro(x=>x.r.nome);
 
   const movimenti = st.catalogo
     .filter(p=>(p.prezzi||[]).length>=2)
@@ -1340,15 +1513,35 @@ function vStatistiche(){
     .sort((x,y)=>Math.abs((y.a-y.da)/y.da) - Math.abs((x.a-x.da)/x.da))
     .slice(0,20);
 
+  /* helper veloci per cataloghi grandi: listino con nomi normalizzati */
+  const listino = st.catalogo.filter(p=>p.ultimoPrezzo!=null).map(p=>({ p, N:norm(p.nome) }));
+  const simile = (A,B)=>{
+    if(A===B) return true;
+    const corto = A.length<=B.length?A:B, lungo = A.length<=B.length?B:A;
+    const parole = corto.split(" ").filter(w=>w.length>2);
+    if(!parole.length) return false;
+    return parole.every(w=>lungo.includes(w));
+  };
+  const migliorAlt = (p)=>{
+    const N = norm(p.nome); let alt = null;
+    for(const e of listino){
+      if(e.p.id===p.id) continue;
+      if(e.p.ultimoPrezzo >= p.ultimoPrezzo - 0.004) continue;
+      if(alt && e.p.ultimoPrezzo >= alt.ultimoPrezzo) continue;
+      if(!simile(N, e.N)) continue;
+      alt = e.p;
+    }
+    return alt;
+  };
+
   /* allarme risparmio: prodotti molto consumati con prezzi pesanti */
   const consumo = new Map();
-  oo.forEach(o=>o.righe.forEach(r=>{
-    if(!r.ordinato) return;
-    const k = r.prodottoId || norm(r.nome);
-    const v = consumo.get(k) || { nome:r.nome, qty:0, pid:r.prodottoId||null };
-    v.qty += (Number(r.quantita)||1);
+  righeSet.forEach(x=>{
+    const k = x.r.prodottoId || norm(x.r.nome);
+    const v = consumo.get(k) || { nome:x.r.nome, qty:0, pid:x.r.prodottoId||null };
+    v.qty += (Number(x.r.quantita)||1);
     consumo.set(k, v);
-  }));
+  });
   const allarmi = [];
   consumo.forEach(v=>{
     const p = v.pid ? st.catalogo.find(x=>x.id===v.pid) : st.catalogo.find(x=>norm(x.nome)===norm(v.nome));
@@ -1369,6 +1562,25 @@ function vStatistiche(){
   allarmi.sort((a,b)=>b.spesa-a.spesa);
   const topAllarmi = allarmi.slice(0,8);
   const risparmioPot = topAllarmi.reduce((s,a)=> s + (a.alt ? (a.prezzo - a.alt.ultimoPrezzo)*a.qty : 0), 0);
+  /* base alternativa: frequenza delle consegne dalle bolle x ultimo prezzo */
+  let baseProxy = false, lista = topAllarmi, risparmio = risparmioPot;
+  if(!lista.length){
+    baseProxy = true;
+    const a2l = [];
+    listino.forEach(e=>{
+      const p = e.p;
+      const freq = (p.prezzi||[]).filter(v=>!da || new Date(v.data)>=da).length;
+      if(!freq) return;
+      const alt = migliorAlt(p);
+      let rincaro = null;
+      if((p.prezzi||[]).length>=2 && p.prezzi[0].prezzo > p.prezzi[1].prezzo + 0.004) rincaro = { da:p.prezzi[1].prezzo, a:p.prezzi[0].prezzo };
+      a2l.push({ nome:p.nome, qty:freq, prezzo:p.ultimoPrezzo, spesa:freq*p.ultimoPrezzo,
+        forn:fornitore(p.ultimoFornitoreId)?.nome||"", alt, rincaro });
+    });
+    a2l.sort((x,y)=>y.spesa-x.spesa);
+    lista = a2l.slice(0,8);
+    risparmio = lista.reduce((s,a3)=> s + (a3.alt ? (a3.prezzo - a3.alt.ultimoPrezzo)*a3.qty : 0), 0);
+  }
 
   const barre = (titolo, coppie) => {
     if(!coppie.length) return "";
@@ -1380,27 +1592,53 @@ function vStatistiche(){
     });
     return x+'</div>';
   };
+  const barreEuro = (titolo, agg) => {
+    if(!agg.length) return "";
+    const mx = agg[0].eur || 1;
+    let x = '<div class="card" style="padding:12px;margin-bottom:12px">'+sezTit(titolo);
+    agg.slice(0,10).forEach(g=>{
+      x += '<div class="stat-riga"><div class="stat-etic"><span>'+esc(g.k)+'</span><b>'+fmtEuro(g.eur)+'</b></div>'
+        +'<div class="risp-sub" style="margin:0 0 3px">'+g.n+' righe \u00b7 q.t\u00e0 '+Math.round(g.qta*100)/100+'</div>'
+        +'<div class="stat-traccia"><i style="width:'+Math.round(g.eur/mx*100)+'%"></i></div></div>';
+    });
+    if(agg.length>10) x += '<div class="risp-sub">\u2026 e altre '+(agg.length-10)+' voci</div>';
+    return x+'</div>';
+  };
 
   let h = '<button class="indietro-link" onclick="A.vai(\'ordini\')">'+ico("frecciaS",14)+' Ordini</button>';
   h += '<div class="step-testa"><div><div class="eyebrow">Analisi</div><h2>Statistiche</h2></div></div>';
-  h += '<div style="display:flex;gap:6px;margin-bottom:12px;flex-wrap:wrap">'
-    +[["30","30 giorni"],["90","90 giorni"],["365","12 mesi"],["tutto","Tutto"]].map(c=>'<button class="btn-mini'+(per===c[0]?' on':'')+'" onclick="A.setStatPeriodo(\''+c[0]+'\')">'+c[1]+'</button>').join("")+'</div>';
+  const attivoChip = usaDate ? "" : per;
+  h += '<div style="display:flex;gap:6px;margin-bottom:8px;flex-wrap:wrap">'
+    +[["30","30 giorni"],["90","90 giorni"],["365","12 mesi"],["tutto","Tutto"]].map(c=>'<button class="btn-mini'+(attivoChip===c[0]?' on':'')+'" onclick="A.setStatPeriodo(\''+c[0]+'\')">'+c[1]+'</button>').join("")+'</div>';
+  h += '<div class="stat-filtri">'
+    +'<label>Dal <input type="date" value="'+esc(st.statDa)+'" onchange="A.setStatData(\'statDa\', this.value)"></label>'
+    +'<label>Al <input type="date" value="'+esc(st.statA)+'" onchange="A.setStatData(\'statA\', this.value)"></label>'
+    +'</div>';
+  h += '<div class="stat-filtri">'
+    +'<select onchange="A.setStatFiltro(\'statFStruttura\', this.value)"><option value="">Tutte le strutture</option>'+st.config.strutture.map(s=>'<option value="'+s.id+'"'+(fS===s.id?' selected':'')+'>'+esc(s.nome)+'</option>').join("")+'</select>'
+    +'<select onchange="A.setStatFiltro(\'statFFornitore\', this.value)"><option value="">Tutti i fornitori</option>'+st.config.fornitori.slice().sort((a,b)=>a.nome.localeCompare(b.nome)).map(f=>'<option value="'+f.id+'"'+(fF===f.id?' selected':'')+'>'+esc(f.nome)+'</option>').join("")+'</select>'
+    +'<select onchange="A.setStatFiltro(\'statFReparto\', this.value)"><option value="">Tutti i reparti</option>'+st.config.reparti.map(r=>'<option value="'+r.id+'"'+(fR===r.id?' selected':'')+'>'+esc(r.nome)+'</option>').join("")+'</select>'
+    +(conOperatori?'<select onchange="A.setStatFiltro(\'statFOperatore\', this.value)"><option value="">Tutti gli operatori</option>'+(st.config.operatori||[]).map(op=>'<option value="'+op.id+'"'+(fO===op.id?' selected':'')+'>'+esc(op.nome)+'</option>').join("")+'</select>':'')
+    +((fS||fF||fR||fO||usaDate)?'<button class="btn-mini" onclick="A.azzeraStatFiltri()">Azzera filtri</button>':'')
+    +'</div>';
+  h += '<p class="suggerimento" style="margin:0 0 10px">Periodo: '+(da?fmtData(da.toISOString()):"inizio")+' \u2192 '+(aFine?fmtData(aFine.toISOString()):"oggi")
+    +' \u00b7 importi stimati sugli ultimi prezzi noti \u00b7 prezzo disponibile su '+righeConPrezzo+' righe su '+righeOrd+'.</p>';
   h += '<div class="kpi">'
-    +'<div class="card"><b>'+oo.length+'</b><span>Ordini</span></div>'
-    +'<div class="card"><b>'+conf+'</b><span>Confermati</span></div>'
+    +'<div class="card"><b style="font-size:22px">'+fmtEuro(spesaTot)+'</b><span>Spesa stimata</span></div>'
+    +'<div class="card"><b>'+oo.length+'</b><span>Ordini \u00b7 '+conf+' conf.</span></div>'
     +'<div class="card"><b>'+righeOrd+'</b><span>Righe ordinate</span></div>'
-    +'<div class="card"><b>'+st.catalogo.length+'</b><span>Prodotti a catalogo</span></div>'
+    +'<div class="card"><b style="font-size:22px">'+fmtEuro(mediaOrdine)+'</b><span>Media per ordine</span></div>'
     +'</div>';
   if(!oo.length) h += '<div class="vuoto mb12">Nessun ordine nel periodo scelto.</div>';
-  if(topAllarmi.length){
+  if(lista.length){
     let x = '<div class="card" style="padding:12px;margin-bottom:12px;border-color:var(--verde)">'+sezTit("Allarme risparmio \u00b7 dove incidere");
-    x += '<p class="suggerimento" style="margin:0 0 10px">I prodotti pi\u00f9 consumati nel periodo con la spesa pi\u00f9 pesante: qui un ritocco di prezzo vale di pi\u00f9.</p>';
-    if(risparmioPot > 0.004){
-      x += '<div class="risp-tot">Risparmio potenziale stimato: <b>'+fmtEuro(risparmioPot)+'</b> nel periodo, passando alle alternative pi\u00f9 economiche gi\u00e0 a catalogo.</div>';
+    x += '<p class="suggerimento" style="margin:0 0 10px">I prodotti pi\u00f9 consumati nel periodo con la spesa pi\u00f9 pesante: qui un ritocco di prezzo vale di pi\u00f9.</p>'+(baseProxy?'<p class="suggerimento" style="margin:-4px 0 10px">Base di calcolo: frequenza delle consegne dalle bolle \u00d7 ultimo prezzo (nessun ordine app nel periodo).</p>':'');
+    if(risparmio > 0.004){
+      x += '<div class="risp-tot">Risparmio potenziale stimato: <b>'+fmtEuro(risparmio)+'</b> nel periodo, passando alle alternative pi\u00f9 economiche gi\u00e0 a catalogo.</div>';
     }
-    topAllarmi.forEach(a2=>{
+    lista.forEach(a2=>{
       x += '<div class="risp-riga"><div class="stat-etic"><span>'+esc(a2.nome)+(a2.forn?' \u00b7 '+esc(a2.forn):'')+'</span><b>'+fmtEuro(a2.spesa)+'</b></div>'
-        +'<div class="risp-sub">'+a2.qty+' ordinati \u00d7 '+fmtEuro(a2.prezzo)+'</div>';
+        +'<div class="risp-sub">'+a2.qty+(baseProxy?' consegne rilevate':' ordinati')+' \u00d7 '+fmtEuro(a2.prezzo)+'</div>';
       if(a2.rincaro) x += '<div class="risp-sub var-su">\u25b2 Rincaro recente: '+fmtEuro(a2.rincaro.da)+' \u2192 '+fmtEuro(a2.rincaro.a)+' ('+pctVar(a2.rincaro.da,a2.rincaro.a)+') \u2014 da rinegoziare</div>';
       if(a2.alt) x += '<div class="risp-sub var-giu">\u25bc Alternativa: '+esc(a2.alt.nome)+' a '+fmtEuro(a2.alt.ultimoPrezzo)
         +(fornitore(a2.alt.ultimoFornitoreId)?.nome ? ' da '+esc(fornitore(a2.alt.ultimoFornitoreId).nome) : '')
@@ -1409,11 +1647,67 @@ function vStatistiche(){
     });
     h += x + '</div>';
   }
-  h += barre("Ordini per struttura", perStruttura);
-  h += barre("Ordini per fornitore", perFornitore);
-  h += barre("Ordini per reparto", perReparto);
-  if(perOperatore.length) h += barre("Ordini per operatore", perOperatore);
-  h += barre("Prodotti pi\u00f9 ordinati (quantit\u00e0)", topProdotti);
+
+  /* andamento costi: variazione media mensile dei prezzi rilevati */
+  const mesiMap = new Map();
+  st.catalogo.forEach(p=>{
+    const arr = p.prezzi||[];
+    for(let i2=0; i2<arr.length-1; i2++){
+      const v = arr[i2], prev = arr[i2+1];
+      if(!v || !prev || v.prezzo==null || prev.prezzo==null || prev.prezzo<=0 || !v.data) continue;
+      const pcv = (v.prezzo-prev.prezzo)/prev.prezzo*100;
+      if(!isFinite(pcv)) continue;
+      const chiave = String(v.data).slice(0,7);
+      const mm = mesiMap.get(chiave)||{ s:0, n:0 };
+      mm.s += pcv; mm.n++;
+      mesiMap.set(chiave, mm);
+    }
+  });
+  const andamento = [...mesiMap.entries()].sort((x,y)=>x[0].localeCompare(y[0])).slice(-8)
+    .map(e=>({ mese:e[0].slice(5,7)+"/"+e[0].slice(2,4), media:e[1].s/e[1].n, n:e[1].n }));
+  if(andamento.length){
+    let x = '<div class="card" style="padding:12px;margin-bottom:12px">'+sezTit("Andamento costi \u00b7 indice del listino");
+    x += '<p class="suggerimento" style="margin:0 0 10px">Variazione media dei prezzi rilevati, mese per mese (da bolle e conferme).</p>';
+    andamento.forEach(m=>{
+      const su = m.media > 0.05, giu = m.media < -0.05;
+      const largh = Math.min(100, Math.round(Math.abs(m.media)/25*100));
+      x += '<div class="stat-riga"><div class="stat-etic"><span>'+m.mese+' \u00b7 '+m.n+' rilevazioni</span>'
+        +'<b class="'+(su?'var-su':(giu?'var-giu':''))+'">'+(su?'\u25b2 ':'')+(giu?'\u25bc ':'')+(m.media>0?'+':'')+m.media.toFixed(1).replace(".",",")+'%</b></div>'
+        +'<div class="stat-traccia"><i style="width:'+largh+'%'+(su?';background:var(--rosso)':'')+'"></i></div></div>';
+    });
+    h += x + '</div>';
+  }
+
+  /* possibili sprechi: alternative simili molto piu' economiche a catalogo */
+  const sprechi = [];
+  listino.forEach(e=>{
+    const p = e.p;
+    const alt = migliorAlt(p);
+    if(!alt) return;
+    const gap = (p.ultimoPrezzo-alt.ultimoPrezzo)/p.ultimoPrezzo*100;
+    if(gap < 15) return;
+    sprechi.push({ p, alt, gap });
+  });
+  sprechi.sort((x,y)=>y.gap-x.gap);
+  if(sprechi.length){
+    let x = '<div class="card" style="padding:12px;margin-bottom:12px">'+sezTit("Possibili sprechi \u00b7 "+Math.min(10,sprechi.length));
+    x += '<p class="suggerimento" style="margin:0 0 10px">Prodotti con un articolo simile pi\u00f9 economico gi\u00e0 a catalogo. Oltre il 60% di differenza, verifica prima unit\u00e0 o confezione.</p>';
+    sprechi.slice(0,10).forEach(s2=>{
+      x += '<div class="risp-riga"><div class="stat-etic"><span>'+esc(s2.p.nome)+(fornitore(s2.p.ultimoFornitoreId)?.nome?' \u00b7 '+esc(fornitore(s2.p.ultimoFornitoreId).nome):'')+'</span><b>'+fmtEuro(s2.p.ultimoPrezzo)+'</b></div>'
+        +'<div class="risp-sub var-giu">\u25bc '+esc(s2.alt.nome)+' a '+fmtEuro(s2.alt.ultimoPrezzo)
+        +(fornitore(s2.alt.ultimoFornitoreId)?.nome?' da '+esc(fornitore(s2.alt.ultimoFornitoreId).nome):'')
+        +' (\u2212'+s2.gap.toFixed(0)+'%)</div>'
+        +(s2.gap>60?'<div class="risp-sub var-su">\u25b2 Differenza molto alta: probabile unit\u00e0 o confezione diversa \u2014 verifica</div>':'')
+        +'</div>';
+    });
+    h += x + '</div>';
+  }
+  h += barreEuro("Spesa per fornitore", eurFornitore);
+  h += barreEuro("Spesa per struttura", eurStruttura);
+  h += barreEuro("Spesa per reparto", eurReparto);
+  h += barreEuro("Spesa per categoria", eurCategoria);
+  if(eurOperatore.length) h += barreEuro("Spesa per operatore", eurOperatore);
+  h += barreEuro("Top prodotti per spesa", topProdottiEuro);
   if(movimenti.length){
     let x = '<div class="card" style="padding:12px;margin-bottom:12px">'+sezTit("Ultime variazioni di prezzo \u00b7 "+movimenti.length);
     movimenti.forEach(v=>{
@@ -1425,31 +1719,94 @@ function vStatistiche(){
   return h;
 }
 
+/* ---------- Calendario forniture ---------- */
+function scadenzeOggi(){
+  const oggi = new Date(); const wd = (oggi.getDay()+6)%7;
+  const out = [];
+  (st.config?.fornitori||[]).forEach(f=>(f.consegne||[]).forEach(c=>{
+    const dl = ((c.giorno-(c.anticipo||0))%7+7)%7;
+    if(dl!==wd) return;
+    out.push({ f, c, entro: c.entroOra||"12:00" });
+  }));
+  out.sort((a,b)=>a.entro.localeCompare(b.entro));
+  return out;
+}
+function minutiA(hhmm){
+  const p = String(hhmm).split(":");
+  const ora = new Date();
+  return (Number(p[0])*60+(Number(p[1])||0)) - (ora.getHours()*60+ora.getMinutes());
+}
+function bannerScadenze(){
+  if(st.avvisoScadChiuso) return "";
+  const sc = scadenzeOggi().filter(s=>minutiA(s.entro) > -60);
+  if(!sc.length) return "";
+  let h = '<div class="card avviso-scad">'
+    +'<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px">'
+    +'<span class="eyebrow" style="color:var(--rosso)">Scadenze ordine di oggi</span>'
+    +'<button style="color:var(--grigio);padding:2px" onclick="A.chiudiAvvisoScad()">'+ico("x",14)+'</button></div>';
+  sc.forEach(s=>{
+    const m = minutiA(s.entro);
+    h += '<div class="cal-voce" style="border-top:none;padding:4px 0">'
+      +'<span class="cal-tag '+(m<=90?'scad':'cons')+'">Entro '+esc(s.entro)+'</span>'
+      +'<span><b>'+esc(s.f.nome)+'</b>'+(m<0?' \u00b7 termine passato':(m<=120?' \u00b7 tra '+m+' min':''))+'</span>'
+      +'<button class="btn-mini cal-ordina" onclick="A.nuovoOrdineForn(\''+s.f.id+'\')">Ordina</button></div>';
+  });
+  return h+'</div>';
+}
+
+function vCalendario(){
+  let h = '<button class="indietro-link" onclick="A.vai(\'ordini\')">'+ico("frecciaS",14)+' Ordini</button>';
+  h += '<div class="step-testa"><div><div class="eyebrow">Forniture</div><h2>Calendario</h2></div></div>';
+  const conCal = st.config.fornitori.filter(f=>(f.consegne||[]).length);
+  if(!conCal.length){
+    h += '<div class="vuoto">Nessun giorno di fornitura configurato.<br><br>Vai in <b>Impostazioni \u2192 Fornitori</b> e tocca l\'icona calendario di un fornitore per impostare i giorni di consegna e il termine ultimo d\'ordine.</div>';
+    return h;
+  }
+  const oggi = new Date(); oggi.setHours(0,0,0,0);
+  for(let i=0; i<14; i++){
+    const d = new Date(oggi.getTime()+i*86400000);
+    const wd = (d.getDay()+6)%7;
+    const scad = [], cons = [];
+    conCal.forEach(f=>(f.consegne||[]).forEach(c=>{
+      if(c.giorno===wd) cons.push({ f, c });
+      const dl = ((c.giorno-(c.anticipo||0))%7+7)%7;
+      if(dl===wd) scad.push({ f, c });
+    }));
+    if(!scad.length && !cons.length && i>0) continue;
+    const nomeG = GIORNI_SETT[wd]+' '+d.getDate()+'/'+String(d.getMonth()+1).padStart(2,"0");
+    h += '<div class="card'+(i===0?' cal-oggi':'')+'" style="padding:12px;margin-bottom:10px">'
+      +'<div class="cal-testa"><span>'+nomeG+'</span>'
+      +(i===0?'<span class="chip-oggi">Oggi</span>':(i===1?'<span class="chip-oggi" style="background:var(--grigio-verde)">Domani</span>':''))
+      +'</div>';
+    scad.sort((x,y)=>(x.c.entroOra||"").localeCompare(y.c.entroOra||""));
+    scad.forEach(x=>{
+      h += '<div class="cal-voce"><span class="cal-tag scad">Entro '+esc(x.c.entroOra||"12:00")+'</span>'
+        +'<span>Ordine <b>'+esc(x.f.nome)+'</b> \u00b7 consegna '+GIORNI_BREVI[x.c.giorno].toLowerCase()+'</span>'
+        +'<button class="btn-mini cal-ordina" onclick="A.nuovoOrdineForn(\''+x.f.id+'\')">Ordina</button></div>';
+    });
+    cons.forEach(x=>{
+      h += '<div class="cal-voce"><span class="cal-tag cons">Consegna</span><span><b>'+esc(x.f.nome)+'</b></span></div>';
+    });
+    h += '</div>';
+  }
+  h += '<p class="suggerimento">Giorni e termini si impostano in Impostazioni \u2192 Fornitori, con l\'icona calendario.</p>';
+  return h;
+}
+
 /* ---------- Stampa ordine ---------- */
-function stampaHTML(o){
-  const s = struttura(o.strutturaId), r = reparto(o.repartoId), f = fornitore(o.fornitoreId);
+function foglioStampa(o, fid, righe, multi){
+  const s = struttura(o.strutturaId), r = reparto(o.repartoId);
+  const fNome = multi
+    ? (fid ? (fornitore(fid)?.nome||"Fornitore eliminato") : "Senza fornitore")
+    : (fornitore(o.fornitoreId)?.nome||"Tutti i fornitori");
   const rigaStampa = (rg)=>{
     const p = st.catalogo.find(x=>x.id===rg.prodottoId);
     const prezzo = (p && p.ultimoPrezzo!=null) ? fmtEuro(p.ultimoPrezzo) : "\u2014";
     return '<tr><td>'+esc(rg.nome)+'</td><td>'+rg.quantita+'</td><td>'+esc(rg.unita)+'</td><td>'+prezzo+'</td><td>'+esc(rg.nota||"")+'</td>'
       +'<td>'+(rg.ordinato ? '\u2713 '+fmtOra(rg.ordinatoAt) : '\u2014')+'</td></tr>';
   };
-  let righeTab = "";
-  if(!o.fornitoreId){
-    const gr = new Map();
-    o.righe.forEach(rg=>{ const fid = fornDiRiga(rg); if(!gr.has(fid)) gr.set(fid, []); gr.get(fid).push(rg); });
-    [...gr.keys()].sort((a,b)=>{
-      const na = a ? (fornitore(a)?.nome||"~") : "~~"; const nb = b ? (fornitore(b)?.nome||"~") : "~~";
-      return na.localeCompare(nb);
-    }).forEach(fid=>{
-      righeTab += '<tr class="st-gruppo"><td colspan="6">'+esc(fid ? (fornitore(fid)?.nome||"Fornitore eliminato") : "Senza fornitore")+'</td></tr>'
-        + gr.get(fid).map(rigaStampa).join("");
-    });
-  } else {
-    righeTab = o.righe.map(rigaStampa).join("");
-  }
   let ctrl = "";
-  if(o.controllo){
+  if(!multi && o.controllo){
     const c = o.controllo;
     ctrl = '<div class="st-ctrl"><b>Controllo consegna del '+fmtData(c.data)+':</b> '
       +((c.mancanti||[]).length || (c.extra||[]).length
@@ -1459,20 +1816,69 @@ function stampaHTML(o){
       +'</div>';
   }
   return '<div class="st-doc">'
-    +'<div class="st-testa"><div><div class="st-eyebrow">Alpstay / Gestione forniture</div>'
-    +'<div class="st-titolo">Ordine '+esc(o.numero)+'</div></div>'
+    +'<div class="st-testa"><div><div class="st-eyebrow">Alpstay / Gestione forniture \u00b7 Ordine '+esc(o.numero)+'</div>'
+    +'<div class="st-titolo">'+esc(fNome)+'</div></div>'
     +'<div class="st-meta">Creato il '+fmtData(o.data)+' '+fmtOra(o.data)
     +(o.confermatoAt?'<br>Confermato il '+fmtData(o.confermatoAt)+' '+fmtOra(o.confermatoAt):'')+'</div></div>'
     +'<table class="st-info"><tr><td>Struttura</td><td>'+esc(s?.nome||"Struttura eliminata")+'</td><td>Reparto</td><td>'+esc(r?.nome||"\u2014")+'</td></tr>'
-    +'<tr><td>Fornitore</td><td>'+esc(f?.nome||"Tutti i fornitori")+'</td><td>Stato</td><td>'+(o.stato==="aperto"?"Aperto":"Confermato")+'</td></tr>'
+    +'<tr><td>Fornitore</td><td>'+esc(fNome)+'</td><td>Stato</td><td>'+(o.stato==="aperto"?"Aperto":(ordineParziale(o)?"Parziale":"Confermato"))+'</td></tr>'
     +((o.creatoDa||o.confermatoDa)?'<tr><td>Elaborato da</td><td>'+esc(opNome(o.creatoDa)||"\u2014")+'</td><td>Confermato da</td><td>'+esc(opNome(o.confermatoDa)||"\u2014")+'</td></tr>':'')
     +'</table>'
-    +'<table class="st-tab"><thead><tr><th>Prodotto</th><th>Q.t\u00e0</th><th>UM</th><th>Ultimo prezzo</th><th>Nota</th><th>Ordinato</th></tr></thead><tbody>'+righeTab+'</tbody></table>'
-    +'<div class="st-tot">'+o.righe.length+' righe \u00b7 '+o.righe.filter(x=>x.ordinato).length+' ordinate</div>'
+    +'<table class="st-tab"><thead><tr><th>Prodotto</th><th>Q.t\u00e0</th><th>UM</th><th>Ultimo prezzo</th><th>Nota</th><th>Ordinato</th></tr></thead><tbody>'
+    +righe.map(rigaStampa).join("")+'</tbody></table>'
+    +'<div class="st-tot">'+righe.length+' righe \u00b7 '+righe.filter(x=>x.ordinato).length+' ordinate'+(multi?' \u00b7 foglio del fornitore':'')+'</div>'
     +ctrl
     +'<div class="st-firma"><span>Firma operatore</span><span>Firma fornitore / rappresentante</span></div>'
     +'<div class="st-pie">&copy; MP-ALPSTAY 08/2026</div>'
     +'</div>';
+}
+function stampaHTML(o){
+  if(o.fornitoreId) return foglioStampa(o, o.fornitoreId, o.righe, false);
+  const gr = new Map();
+  o.righe.forEach(rg=>{ const fid = fornDiRiga(rg); if(!gr.has(fid)) gr.set(fid, []); gr.get(fid).push(rg); });
+  const chiavi = [...gr.keys()].sort((a,b)=>{
+    const na = a ? (fornitore(a)?.nome||"~") : "~~"; const nb = b ? (fornitore(b)?.nome||"~") : "~~";
+    return na.localeCompare(nb);
+  });
+  if(!chiavi.length) return foglioStampa(o, "", o.righe, true);
+  return chiavi.map(fid=>foglioStampa(o, fid, gr.get(fid), true)).join("");
+}
+
+/* ---------- Invio ordine su WhatsApp ---------- */
+function testoOrdineWA(o, fid){
+  const s = struttura(o.strutturaId), r = reparto(o.repartoId);
+  const righe = (fid===null) ? o.righe : o.righe.filter(rg=>fornDiRiga(rg)===fid);
+  const fNome = (fid===null)
+    ? (fornitore(o.fornitoreId)?.nome||"")
+    : (fid ? (fornitore(fid)?.nome||"") : "");
+  let txt = "*ORDINE "+o.numero+"*";
+  if(s) txt += " \u2014 "+s.nome;
+  if(r) txt += " / "+r.nome;
+  txt += "\n"+fmtData(o.data);
+  if(fNome) txt += "\nFornitore: "+fNome;
+  txt += "\n\n";
+  righe.forEach(rg=>{
+    txt += "\u2022 "+rg.quantita+" "+rg.unita+" \u2014 "+rg.nome+(rg.nota?" ("+rg.nota+")":"")+"\n";
+  });
+  txt += "\nTotale: "+righe.length+" articoli";
+  return txt;
+}
+function telWa(f){
+  if(!f || !f.telefono) return "";
+  let d = String(f.telefono).replace(/\D/g,"");
+  if(d.startsWith("00")) d = d.slice(2);
+  if(d && !d.startsWith("39") && (d.startsWith("3")||d.startsWith("0")) && d.length<=11) d = "39"+d;
+  return d;
+}
+function linkWa(num, txt){
+  const enc = encodeURIComponent(txt);
+  const mobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent||"");
+  if(mobile) return "https://wa.me/"+(num||"")+"?text="+enc;
+  const canale = st.config?.waCanale || "web";
+  if(canale==="app") return "whatsapp://send?"+(num?("phone="+num+"&"):"")+"text="+enc;
+  if(num) return "https://web.whatsapp.com/send?phone="+num+"&text="+enc;
+  /* senza numero in anagrafica: pagina ponte con la scelta "usa WhatsApp Web" */
+  return "https://wa.me/?text="+enc;
 }
 
 /* ---------- Layout ---------- */
@@ -1493,14 +1899,16 @@ function render(){
   const attivo = document.activeElement;
   const fid = attivo && attivo.dataset ? attivo.dataset.fid : null;
   const selPos = (attivo && typeof attivo.selectionStart==="number") ? attivo.selectionStart : null;
+  const scrollY0 = window.scrollY;
 
   let corpo = "";
-  if(st.vista.name==="ordini") corpo = vOrdini();
+  if(st.vista.name==="ordini") corpo = bannerScadenze() + vOrdini();
   else if(st.vista.name==="nuovo") corpo = vNuovo();
   else if(st.vista.name==="dettaglio") corpo = vDettaglio();
   else if(st.vista.name==="catalogo") corpo = vCatalogo();
   else if(st.vista.name==="impostazioni") corpo = vImpostazioni();
   else if(st.vista.name==="statistiche") corpo = vStatistiche();
+  else if(st.vista.name==="calendario") corpo = vCalendario();
 
   const tab = (nome, icona, etichetta, fab) => {
     const on = st.vista.name===nome || (nome==="ordini" && st.vista.name==="dettaglio");
@@ -1516,6 +1924,9 @@ function render(){
       ? '<span class="badge-err">Salvataggio non riuscito</span>'
       : '<span class="salvato'+(st.ultimoSalvataggio?'':' hidden')+'" id="salvato-ind">'+(st.ultimoSalvataggio?'<i></i>Salvato alle '+st.ultimoSalvataggio:'')+'</span>')
     +(st.operatoreId?'<button class="btn-icona" title="Operatore: '+esc(opNome(st.operatoreId))+' (tocca per cambiare)" onclick="A.esciOperatore()"><span class="mono sm">'+esc(mono(opNome(st.operatoreId)))+'</span></button>':'')
+    +(function(){ const n = scadenzeOggi().filter(s=>minutiA(s.entro)>=0).length;
+      return '<button class="btn-icona" style="position:relative" title="Calendario forniture" onclick="A.vai(\'calendario\')">'+ico("calendario",18)
+        +(n?'<span class="badge-punto">'+n+'</span>':'')+'</button>'; })()
     +'<button class="btn-icona" title="Statistiche" onclick="A.vai(\'statistiche\')">'+ico("grafico",18)+'</button>'
     +'<button class="btn-icona" title="Impostazioni" onclick="A.vai(\'impostazioni\')">'+ico("ingranaggio",18)+'</button>'
     +'</div></div></div></header>'
@@ -1528,12 +1939,14 @@ function render(){
     +tab("catalogo","pacco","Catalogo")
     +'</div></nav>';
 
-  /* ripristino il focus */
+  /* ripristino scorrimento e focus (senza far saltare la pagina) */
+  window.scrollTo(0, scrollY0);
   const daFocalizzare = st.focusFid || fid;
   if(daFocalizzare){
     const el = document.querySelector('[data-fid="'+daFocalizzare+'"]');
     if(el){
-      el.focus();
+      try{ el.focus({ preventScroll:true }); }catch(e){ el.focus(); }
+      if(st.focusFid) { try{ el.scrollIntoView({ block:"center" }); }catch(e){} }
       if(!st.focusFid && selPos!==null && el.setSelectionRange){ try{ el.setSelectionRange(selPos, selPos); }catch(e){} }
     }
     st.focusFid = null;
@@ -1549,9 +1962,9 @@ const A = {
     if(nome==="nuovo"){ st.step=0; st.draft={strutturaId:"",repartoId:"",fornitoreId:"",righe:[]}; st.nuovaStruttura=null; st.nuovoReparto=null; st.nuovoFornitore=null; st.rapido=null; st.cercaPicker=""; }
     if(nome==="impostazioni"){ st.editStruttura=null; st.editStrutturaNome=""; st.nuovaStrutturaImp=null; st.confermaElimina=null; }
     st.svuotaCat=0; st.svuotaTxt=""; st.svuotaErr=false;
-    st.vista={name:nome}; render();
+    st.vista={name:nome}; render(); window.scrollTo(0,0);
   },
-  apriDettaglio(id){ st.vista={name:"dettaglio",ordineId:id}; st.confermaVisibile=false; st.aggiungiProdotti=false; st.notaAperta=null; st.confermaEliminaOrd=false; st.modificaOrdine=null; st.raggruppaForn=null; render(); },
+  apriDettaglio(id){ st.vista={name:"dettaglio",ordineId:id}; st.confermaVisibile=false; st.aggiungiProdotti=false; st.notaAperta=null; st.confermaEliminaOrd=false; st.modificaOrdine=null; st.raggruppaForn=null; st.waPanel=false; render(); window.scrollTo(0,0); },
   tornaOrdini(){ st.vista={name:"ordini"}; st.confermaVisibile=false; st.aggiungiProdotti=false; render(); },
   stepIndietro(){ st.step=Math.max(0,st.step-1); render(); },
   chiudiForm(nome){ st[nome]=null; render(); },
@@ -1587,7 +2000,7 @@ const A = {
   },
 
   /* wizard · reparto */
-  scegliReparto(id){ st.draft.repartoId=id; st.step=2; render(); },
+  scegliReparto(id){ st.draft.repartoId=id; st.step = (st.preForn && st.draft.fornitoreId) ? 3 : 2; st.preForn=false; render(); },
   apriNuovoReparto(){ st.nuovoReparto={nome:""}; st.focusFid="nr-nome"; render(); },
   setNuovoReparto(val){ st.nuovoReparto.nome=val; },
   salvaNuovoReparto(){
@@ -1598,7 +2011,8 @@ const A = {
   },
 
   /* wizard · fornitore */
-  scegliFornitore(id){ st.draft.fornitoreId=id; st.step=3; render(); },
+  scegliFornitore(id){ st.draft.fornitoreId=id; st.step=3; st.pickerSoloForn=null; render(); },
+  setPickerSoloForn(v){ st.pickerSoloForn=v; render(); },
   togglePreferito(id){
     st.config.fornitori = st.config.fornitori.map(f=>f.id===id?{...f,preferito:!f.preferito}:f);
     salvaConfig(); render();
@@ -1677,7 +2091,7 @@ const A = {
     st.ordini = st.ordini.map(o=>o.id!==oid?o:{...o, righe:o.righe.map(r=>r.id!==rid?r:{...r,nota:val})});
     rinvia("salvaOrdini", salvaOrdini, 400);
   },
-  apriAggiungiProdotti(){ st.aggiungiProdotti=true; st.confermaVisibile=false; st.confermaEliminaOrd=false; st.cercaPicker=""; st.rapido=null; render(); window.scrollTo({top:0,behavior:"smooth"}); },
+  apriAggiungiProdotti(){ st.aggiungiProdotti=true; st.confermaVisibile=false; st.confermaEliminaOrd=false; st.cercaPicker=""; st.rapido=null; st.pickerSoloForn=null; render(); window.scrollTo({top:0,behavior:"smooth"}); },
   chiudiAggiungiProdotti(){ st.aggiungiProdotti=false; render(); },
   mostraConferma(){ st.confermaVisibile=true; st.aggiungiProdotti=false; st.confermaEliminaOrd=false; st.confermaForn=""; render(); window.scrollTo({top:0,behavior:"smooth"}); },
   setConfermaForn(v){ st.confermaForn=v; },
@@ -1760,6 +2174,28 @@ const A = {
     if(!area){ area = document.createElement("div"); area.id = "stampa-area"; document.body.appendChild(area); }
     area.innerHTML = stampaHTML(o);
     window.print();
+  },
+  apriWa(oid){
+    const o = st.ordini.find(x=>x.id===oid); if(!o) return;
+    const gruppi = new Set(o.righe.map(fornDiRiga));
+    if(!o.fornitoreId && gruppi.size>1){
+      st.waPanel = !st.waPanel;
+      st.aggiungiProdotti=false; st.confermaVisibile=false; st.confermaEliminaOrd=false;
+      render(); window.scrollTo({top:0,behavior:"smooth"});
+    } else {
+      A.inviaWhatsApp(oid, null);
+    }
+  },
+  chiudiWa(){ st.waPanel=false; render(); },
+  inviaWhatsApp(oid, fid){
+    const o = st.ordini.find(x=>x.id===oid); if(!o) return;
+    const txt = testoOrdineWA(o, fid);
+    const f = (fid===null) ? fornitore(o.fornitoreId) : (fid ? fornitore(fid) : null);
+    const num = telWa(f);
+    const urlWa = linkWa(num, txt);
+    if(urlWa.startsWith("whatsapp://")) window.location.href = urlWa;
+    else window.open(urlWa, "_blank");
+    st.waPanel = false; render();
   },
 
   /* catalogo */
@@ -1850,6 +2286,82 @@ const A = {
     if(st.operatoreId===id) st.operatoreId = null;
     salvaConfig(); st.confermaEliminaOp=null; render();
   },
+
+  /* anagrafica fornitori */
+  impFornApriRinomina(id){
+    const f = st.config.fornitori.find(x=>x.id===id); if(!f) return;
+    st.editForn = { id:f.id, nome:f.nome, telefono:f.telefono||"" }; st.unisciForn=null; st.confermaEliminaForn=null;
+    st.focusFid="ef-nome"; render();
+  },
+  impFornSetNome(val){ if(st.editForn) st.editForn.nome = val; },
+  impFornSetTel(val){ if(st.editForn) st.editForn.telefono = val; },
+  impFornSalvaNome(){
+    const e = st.editForn; if(!e) return;
+    const nome = e.nome.trim(); if(!nome){ return; }
+    st.config.fornitori = st.config.fornitori.map(f=>f.id===e.id?{...f, nome, telefono:(e.telefono||"").trim()}:f);
+    salvaConfig(); st.editForn=null; render();
+  },
+  impFornChiedi(id){ st.confermaEliminaForn = st.confermaEliminaForn===id?null:id; st.unisciForn=null; st.editForn=null; render(); },
+  impFornAnnulla(){ st.confermaEliminaForn=null; render(); },
+  impFornElimina(id){
+    st.config.fornitori = st.config.fornitori.filter(f=>f.id!==id);
+    salvaConfig(); st.confermaEliminaForn=null; render();
+  },
+  impFornUnisciApri(id){ st.unisciForn = st.unisciForn===id?null:id; st.unisciTarget=""; st.confermaEliminaForn=null; st.editForn=null; st.consegneForn=null; render(); },
+  consegneApri(id){ st.consegneForn = st.consegneForn===id?null:id; st.unisciForn=null; st.confermaEliminaForn=null; st.editForn=null; render(); },
+  consegneChiudi(){ st.consegneForn=null; render(); },
+  chiudiAvvisoScad(){ st.avvisoScadChiuso=true; render(); },
+  attivaNotifiche(){
+    if(!("Notification" in window)) return;
+    Notification.requestPermission().then(()=>render());
+  },
+  setCanaleWa(v){ st.config.waCanale = v; salvaConfig(); render(); },
+  consegnaToggleGiorno(id, wd){
+    st.config.fornitori = st.config.fornitori.map(f=>{
+      if(f.id!==id) return f;
+      const cs = (f.consegne||[]).slice();
+      const ix = cs.findIndex(c=>c.giorno===wd);
+      if(ix>=0) cs.splice(ix,1);
+      else cs.push({ giorno:wd, anticipo:1, entroOra:"12:00" });
+      cs.sort((a,b)=>a.giorno-b.giorno);
+      return {...f, consegne:cs};
+    });
+    salvaConfig(); render();
+  },
+  consegnaSet(id, wd, campo, val){
+    st.config.fornitori = st.config.fornitori.map(f=>{
+      if(f.id!==id) return f;
+      return {...f, consegne:(f.consegne||[]).map(c=>c.giorno===wd?{...c, [campo]: (campo==="anticipo"?Number(val):val)}:c)};
+    });
+    salvaConfig(); render();
+  },
+  nuovoOrdineForn(fid){
+    A.vai("nuovo");
+    st.draft.fornitoreId = fid;
+    st.preForn = true;
+    render();
+  },
+  impFornUnisciTarget(v){ st.unisciTarget = v; },
+  impFornUnisciAnnulla(){ st.unisciForn=null; st.unisciTarget=""; render(); },
+  impFornUnisci(){
+    const src = st.unisciForn, dst = st.unisciTarget;
+    if(!src || !dst || src===dst) return;
+    st.catalogo = st.catalogo.map(p=>{
+      let c = false; const np = {...p};
+      if(np.ultimoFornitoreId===src){ np.ultimoFornitoreId=dst; c=true; }
+      if((np.prezzi||[]).some(v=>v.fornitoreId===src)){ np.prezzi = np.prezzi.map(v=>v.fornitoreId===src?{...v,fornitoreId:dst}:v); c=true; }
+      if((np.storico||[]).some(v=>v.fornitoreId===src)){ np.storico = np.storico.map(v=>v.fornitoreId===src?{...v,fornitoreId:dst}:v); c=true; }
+      return c?np:p;
+    });
+    st.ordini = st.ordini.map(o=>o.fornitoreId===src?{...o, fornitoreId:dst}:o);
+    const fSrc = st.config.fornitori.find(f=>f.id===src);
+    st.config.fornitori = st.config.fornitori
+      .filter(f=>f.id!==src)
+      .map(f=>(f.id===dst && fSrc && fSrc.preferito)?{...f, preferito:true}:f);
+    salvaCatalogo(); salvaOrdini(); salvaConfig();
+    st.unisciForn=null; st.unisciTarget="";
+    render();
+  },
   setPin(val){
     st.pinInput = val.replace(/\D/g,"").slice(0,6);
     const op = (st.config.operatori||[]).find(o=>o.pin===st.pinInput);
@@ -1858,7 +2370,10 @@ const A = {
     if(e) e.style.display = st.pinInput.length>=4 ? "block" : "none";
   },
   esciOperatore(){ st.operatoreId=null; st.pinInput=""; render(); },
-  setStatPeriodo(v){ st.statPeriodo=v; render(); },
+  setStatPeriodo(v){ st.statPeriodo=v; st.statDa=""; st.statA=""; render(); },
+  setStatData(campo, val){ st[campo] = val||""; render(); },
+  setStatFiltro(campo, val){ st[campo] = val||""; render(); },
+  azzeraStatFiltri(){ st.statDa=""; st.statA=""; st.statFStruttura=""; st.statFFornitore=""; st.statFReparto=""; st.statFOperatore=""; render(); },
 
   /* svuotamento catalogo (doppia conferma) */
   svuotaCatStep(n){ st.svuotaCat=n; st.svuotaTxt=""; st.svuotaErr=false; if(n===2) st.focusFid="svuota-txt"; render(); },
@@ -2041,7 +2556,7 @@ function estraiJSON(testo){
 /* riconoscimento fornitore dalla bolla: tollera umlaut (Woerndle/Worndle)
    e ragioni sociali (Srl, GmbH...) */
 function piegaNome(s){
-  return norm(s).replace(/\u00d6/g,"O").replace(/OE/g,"O").replace(/\u00dc/g,"U").replace(/UE/g,"U").replace(/\u00c4/g,"A").replace(/AE/g,"A");
+  return norm(s).replace(/[.,;:\u2019'\-\/]+/g," ").replace(/\s+/g," ").trim().replace(/\u00d6/g,"O").replace(/OE/g,"O").replace(/\u00dc/g,"U").replace(/UE/g,"U").replace(/\u00c4/g,"A").replace(/AE/g,"A");
 }
 function trovaFornitore(nomeLetto){
   const L = piegaNome(nomeLetto);
@@ -2062,7 +2577,7 @@ function trovaStruttura(nomeLetto){
 function pulisciNomeForn(s){
   let x = String(s).replace(/\s*[\/\-]\s*/g," ")
     .replace(/\b(S\.?R\.?L\.?|G\.?M\.?B\.?H\.?|S\.?P\.?A\.?|SNC|SAS|AG|KG|OHG|INTERSERVICE)\b/gi,"")
-    .replace(/\s+/g," ").trim();
+    .replace(/\s+/g," ").trim().replace(/^[\s.,\-]+|[\s.,\-]+$/g,"");
   if(!x) x = String(s).trim();
   return x.split(" ").map(w=>w ? w[0].toUpperCase()+w.slice(1).toLowerCase() : w).join(" ");
 }
@@ -2106,7 +2621,7 @@ async function analizzaBollaFile(file){
     blocco = { type:"image", source:{ type:"base64", media_type: img.media, data: img.b64 } };
   }
   const prompt = 'Questa e\' una bolla di acquisto / documento di consegna (gastronomia e hotellerie).\n'
-    +'Estrai ogni prodotto con: PREZZO UNITARIO in euro (colonna prezzo, NON l\'importo totale di riga), QUANTITA consegnata come numero, e unita di misura um. Usa null per i valori non leggibili. Ignora codici articolo, IVA, sconti e totali. Ignora il testo scritto a mano.\n'
+    +'Estrai ogni prodotto con: PREZZO UNITARIO in euro (colonna prezzo, NON l\'importo totale di riga), QUANTITA consegnata come numero, e unita di misura um. Usa null per i valori non leggibili. Se una descrizione e\' bilingue (italiano e tedesco), scrivi il nome UNA sola volta, senza accodare la traduzione. Ignora codici articolo, IVA, sconti e totali. Ignora il testo scritto a mano.\n'
     +'Se i prodotti sono piu\' di 40, elenca solo i primi 40.\n'
     +'Rispondi SOLO con JSON valido e COMPATTO (una sola riga), senza testo prima o dopo e senza backtick, in questo formato:\n'
     +'{"fornitore":"nome fornitore se leggibile, altrimenti null","destinatario":"nome della struttura o del destinatario di consegna (campo Destinatario/Destinazione) se leggibile, altrimenti null","prodotti":[{"nome":"NOME PRODOTTO IN MAIUSCOLO","categoria":"una tra: '+CATEGORIE.join(", ")+'","prezzo":12.34,"quantita":3,"um":"KG"}]}';
@@ -2210,7 +2725,7 @@ async function leggiBolla(file){
       blocco = { type:"image", source:{ type:"base64", media_type: img.media, data: img.b64 } };
     }
     const prompt = 'Questa e\' una bolla di acquisto / documento di consegna (gastronomia e hotellerie).\n'
-      +'Estrai ogni prodotto con: PREZZO UNITARIO in euro (colonna prezzo, NON l\'importo totale di riga), QUANTITA consegnata (colonna quantita) come numero, e unita di misura um (KG, NR, CAR, STK, GL, SA...). Usa null per i valori non leggibili. Ignora codici articolo, IVA, sconti e totali. Ignora il testo scritto a mano.\n'
+      +'Estrai ogni prodotto con: PREZZO UNITARIO in euro (colonna prezzo, NON l\'importo totale di riga), QUANTITA consegnata (colonna quantita) come numero, e unita di misura um (KG, NR, CAR, STK, GL, SA...). Usa null per i valori non leggibili. Se una descrizione e\' bilingue (italiano e tedesco), scrivi il nome UNA sola volta, senza accodare la traduzione. Ignora codici articolo, IVA, sconti e totali. Ignora il testo scritto a mano.\n'
       +'Se i prodotti sono piu\' di 40, elenca solo i primi 40.\n'
       +'Rispondi SOLO con JSON valido e COMPATTO (una sola riga), senza testo prima o dopo e senza backtick, in questo formato:\n'
       +'{"fornitore":"nome fornitore se leggibile, altrimenti null","destinatario":"nome della struttura o del destinatario di consegna (campo Destinatario/Destinazione) se leggibile, altrimenti null","prodotti":[{"nome":"NOME PRODOTTO IN MAIUSCOLO","categoria":"una tra: '+CATEGORIE.join(", ")+'","prezzo":12.34,"quantita":3,"um":"KG"}]}';
@@ -2367,5 +2882,25 @@ async function provaConnessione(){
   st.ordini   = await caricaChiave(K_ORDINI,   []);
   st.caricamento = false;
   render();
+
+  /* promemoria scadenze: controllo ogni minuto mentre l'app e' aperta */
+  st.notificheInviate = new Set();
+  const controllaScadenze = ()=>{
+    if(!("Notification" in window) || Notification.permission!=="granted") return;
+    scadenzeOggi().forEach(s=>{
+      const m = minutiA(s.entro);
+      const kBase = new Date().toDateString()+"|"+s.f.id+"|"+s.c.giorno;
+      if(m<=60 && m>5 && !st.notificheInviate.has(kBase+"|pre")){
+        st.notificheInviate.add(kBase+"|pre");
+        try{ new Notification("Ordini giornalieri", { body:"Entro le "+s.entro+": ordine "+s.f.nome+" (consegna "+GIORNI_BREVI[s.c.giorno].toLowerCase()+")" }); }catch(e){}
+      }
+      if(m<=5 && m>-10 && !st.notificheInviate.has(kBase+"|ora")){
+        st.notificheInviate.add(kBase+"|ora");
+        try{ new Notification("Ordini giornalieri", { body:"Ultimo momento: entro le "+s.entro+" l'ordine "+s.f.nome }); }catch(e){}
+      }
+    });
+  };
+  controllaScadenze();
+  setInterval(controllaScadenze, 60000);
 })();
 </script>
